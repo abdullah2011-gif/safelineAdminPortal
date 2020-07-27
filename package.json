@@ -9,7 +9,7 @@
     "chartist": "0.10.1",
     "datatables.net-bs": "1.10.16",
     "datatables.net-responsive": "2.2.1",
-    "jquery": "3.3.1",
+    "jquery": "3.5.1",
     "moment": "^2.27.0",
     "node-sass": "4.13.0",
     "react": "16.8.6",
