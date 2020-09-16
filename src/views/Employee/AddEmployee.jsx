@@ -70,7 +70,7 @@ function UserProfile(props) {
         .then((res) => {
           if (res.status === 200) {
             new Apimanager()
-              .PutrouteByid(`employee/${employeeId}`,{fullName,email,dateOfBirth})
+              .PutrouteByid(`employee/detail/${employeeId}`,{fullName,email,dateOfBirth})
               .then((res) => {
                 if (res.status == 200) {
                     setAlert((
@@ -92,7 +92,7 @@ function UserProfile(props) {
         .catch((e) => console.log(e));
     } else {
       new Apimanager()
-        .PutrouteByid(`employee/${employeeId}`,{fullName,email,dateOfBirth})
+        .PutrouteByid(`employee/detail/${employeeId}`,{fullName,email,dateOfBirth})
         .then((res) => {
           if (res.status == 200) {
             setAlert((

@@ -22,55 +22,26 @@ var b = moment(c, 'YYYY');
 var diff = a.diff(b, 'years'); // calculates patient's age in years
 return diff; // this prints out the age
   }
-  const closeBar=()=>{
-    setIsBarOpen(false)
-    new Apimanager()
-      .postroute("admin/line/closebar")
-      .then((res) => {
-        if (res.status == 200) {
-          setIsBarOpen(false)
-          setAlert(null)
-        }else{
-          setIsBarOpen(true)
-        }
-      })
-      .catch((e) =>{
-        setIsBarOpen(true);
-         console.log(e)});
-      setAlert(null)
+ const editrecord=(prop)=>{
+    new Apimanager().PutrouteByid("admin/bumpup/"+prop[0]).then((res) => {
+      if(res.data)
+      setAlert(<SweetAlert
+        warning
+        style={{ display: "block", marginTop: "100px" }}
+        title={res.data.message}
+        onConfirm={() => setAlert(null)}
+        onCancel={() => setAlert(null)}
+        confirmBtnBsStyle="warning"
+        showCancel ={true}
+      ></SweetAlert>)
+          new Apimanager().Getroute("Admin/party/detail").then((res) => {
+            setCustomers(res)
+          })
+    })
   }
-  const submitform = () => {
-    setIsLineOpen(false)
-    new Apimanager()
-      .postroute("admin/line/destroyline")
-      .then((res) => {
-        if (res.status == 200) {
-          setIsLineOpen(false)
-          setIsBarOpen(true)
-          setAlert(null)
-        }else{
-          setIsLineOpen(true)
-        }
-      })
-      .catch((e) =>{
-        setIsLineOpen(true);
-         console.log(e)});
-      setAlert(null)
-  };
   useEffect(()=>{
-    new Apimanager().postroute(`admin/line/checklineopen`).then(res=>{
-      console.log(res.status)
-      console.log(res.data)
-      if(res.status==200)setIsLineOpen(res.data.success)
-      else if(res.status == 201) setIsBarOpen(res.data.success)
-      else {
-        console.log('call')
-        setIsLineOpen(false)
-        setIsBarOpen(false)
-      }
-      new Apimanager().Getroute("Admin/line/customer").then((res) => {
-        if(!res.success) return
-       setCustomers(res.line)
+      new Apimanager().Getroute("Admin/party/detail").then((res) => {
+       setCustomers(res)
         if (!isDatableInitialize) {
           $("#datatables").DataTable({
             pagingType: "full_numbers",
@@ -86,22 +57,18 @@ return diff; // this prints out the age
           setIsDatableInitialize(true)
         }
       });
-    }).catch(e=>console.log(e))
    
     return ()=>{
         $(".data-table-wrapper").find("table").DataTable().destroy(true);
     }
   },[])
+  console.log(customers)
     var dataTable = {
-      headerRow: ["Customer Id", "Full Name", "Email", "age", "Number in line", "Estimate time", "Status"],
+      headerRow: ["Id", "no of customers","time"],
       dataRows: customers.map((item,i) => [
-        item.customer?item.customer.customerId :'',
-        item.customer?item.customer.fullName:'',
-        item.customer?item.customer.email:'',
-        item.customer?calculateAge(item.customer.dateOfBirth):'',
-        i+1,
-        item.estimatedTime*i+1,
-        item.customer?item.customer.joinedLine?'Available':'Currently Unavailable':'',
+        item.partyId?item.partyId:'',
+        item.customers&&item.customers.length>0?item.customers.length :'',
+        item.createdAt?moment(item.createdAt).format('HH-mm'):'',
       ]),
     };
     return (
@@ -139,15 +106,6 @@ return diff; // this prints out the age
                 <th style={{ fontWeight: "bold", color: "#000000" }}>
                   {dataTable.headerRow[3]}
                 </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[4]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[5]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[6]}
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -157,6 +115,15 @@ return diff; // this prints out the age
                     {prop.map((prop, key) => {
                       return <td key={key}>{prop}</td>;
                     })}
+                    <td className="text-right">
+                      <Button
+                        style={{ marginRight: 8, width: 90 }}
+                        onClick={() => editrecord(prop, key)}
+                        bsStyle="warning"
+                      >
+                        Bump up
+                      </Button>
+                    </td>
                   </tr>
                 );
               })}
@@ -164,49 +131,6 @@ return diff; // this prints out the age
           </table>
           {console.log(isBarOpen+' '+isLineOpen)}
           <Row>
-                    {isLineOpen? <Col md={12}>
-                         <Button
-                            onClick={()=>setAlert(<SweetAlert
-                              warning
-                              style={{ display: "block", marginTop: "100px" }}
-                              title='Do you want to close line!'
-                              onConfirm={submitform}
-                              onCancel={() => setAlert(null)}
-                              confirmBtnBsStyle="warning"
-                              showCancel ={true}
-                            ></SweetAlert>)}//submitform}
-                            bsStyle="warning"
-                            style={{
-                              marginLeft: "45%",
-                              height: 40,
-                              width: 120,
-                            }}
-                          >
-                            Close Line
-                          </Button>
-                      </Col>:
-                      isBarOpen ?<Col md={12}>
-                      <Button
-                         onClick={()=>setAlert(<SweetAlert
-                           warning
-                           style={{ display: "block", marginTop: "100px" }}
-                           title='Do you want to close Bar!'
-                           onConfirm={closeBar}
-                           onCancel={() => setAlert(null)}
-                           confirmBtnBsStyle="warning"
-                           showCancel ={true}
-                         ></SweetAlert>)}//submitform}
-                         bsStyle="warning"
-                         style={{
-                           marginLeft: "45%",
-                           height: 40,
-                           width: 120,
-                         }}
-                       >
-                         Close Bar
-                       </Button>
-                   </Col>:null
-                      }
                     </Row>
         </div>
         {alert}

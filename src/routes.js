@@ -1,20 +1,4 @@
-/*!
 
-=========================================================
-* Light Bootstrap Dashboard React - v1.3.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/light-bootstrap-dashboard-react
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/light-bootstrap-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import Login from "./views/Login/Loginandregister";
 import Manageaccount from "views/Settings/Manageaccount";
 import Manageprofile from "views/Settings/Manageprofile";
@@ -59,13 +43,13 @@ const dashboardRoutes = [
   //   layout: "/admin",
   // },
   //--------------------------------------------------------------Dashboard--------------------------------------------
-  {
-    path: "/dashboard",
-    name: "Summary",
-    icon: "pe-7s-graph",
-    component: Dashboard,
-    layout: "/admin",
-  },
+  // {
+  //   path: "/dashboard",
+  //   name: "Summary",
+  //   icon: "pe-7s-graph",
+  //   component: Dashboard,
+  //   layout: "/admin",
+  // },
   //------------------------------------------------------------Settings------------------------------------------------
   {
     path: "/manage_account",
@@ -86,13 +70,13 @@ const dashboardRoutes = [
 
   //-------------------------------------------------------Line------------------------------------------------
 
-  {
-    path: "/addline",
-    name: "Add Line",
-    icon: "pe-7s-user",
-    component: AddLine,
-    layout: "/admin",
-  },
+  // {
+  //   path: "/addline",
+  //   name: "Add Line",
+  //   icon: "pe-7s-user",
+  //   component: AddLine,
+  //   layout: "/admin",
+  // },
   {
     path: "/line",
     name: "Line",
@@ -156,16 +140,16 @@ const dashboardRoutes = [
   //   icon: "pe-7s-user",
   //   component: Addcategories,
   //   layout: "/admin",
-  //   redirect: true,
+  //   // redirect: true,
   // },
-  // {
-  //   path: "/categories",
-  //   name: "Categories",
-  //   icon: "pe-7s-note2",
-  //   component: Categories,
-  //   layout: "/admin",
-  //   redirect: true,
-  // },
+  {
+    path: "/categories",
+    name: "Bar Tables",
+    icon: "pe-7s-note2",
+    component: Categories,
+    layout: "/admin",
+    // redirect: true,
+  },
 ];
 
 export default dashboardRoutes;

@@ -19,8 +19,25 @@ var b = moment(age, 'DD/MM/YYYY');
 var diff = a.diff(b, 'years'); 
 return diff; 
   }
+  const editrecord=(prop)=>{
+    new Apimanager().PutrouteByid("admin/vipcustomer/"+prop[0]).then((res) => {
+      if(res.data)
+      setAlert(<SweetAlert
+        success
+        style={{ display: "block", marginTop: "100px" }}
+        title={res.data.message}
+        onConfirm={() => setAlert(null)}
+        onCancel={() => setAlert(null)}
+        confirmBtnBsStyle="warning"
+        showCancel ={true}
+      ></SweetAlert>)
+          new Apimanager().Getroute("customer/detail").then((res) => {
+            setCustomers(res)
+          })
+    })
+  }
   useEffect(()=>{
-    new Apimanager().Getroute("customer").then((res) => {
+    new Apimanager().Getroute("customer/detail").then((res) => {
       // res.shift();
      setCustomers(res)
       if (!isDatableInitialize) {
@@ -43,12 +60,13 @@ return diff;
     }
   },[])
     var dataTable = {
-      headerRow: ["Customer Id", "Full Name", "Email", "age"],
+      headerRow: ["Customer Id", "Full Name", "Email", "age","Vip status"],
       dataRows: customers.map((item,i) => [
         item.customerId,
         item.fullName,
         item.email,
         calculateAge(item.dateOfBirth),
+        item.vip?'true':'false',
       ]),
     };
     return (
@@ -86,6 +104,9 @@ return diff;
                 <th style={{ fontWeight: "bold", color: "#000000" }}>
                   {dataTable.headerRow[3]}
                 </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[4]}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -95,6 +116,13 @@ return diff;
                     {prop.map((prop, key) => {
                       return <td key={key}>{prop}</td>;
                     })}
+                     <Button
+                        style={{ marginRight: 8, width: 90 }}
+                        onClick={() => editrecord(prop, key)}
+                        bsStyle="warning"
+                      >
+                        {prop[4] == 'false'? 'make vip':'revert'}
+                      </Button>
                   </tr>
                 );
               })}

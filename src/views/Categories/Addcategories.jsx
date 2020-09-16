@@ -296,7 +296,6 @@ class UserProfile extends Component {
                         onChange={this._onChange}
                       />
                       <Col md={12}>
-                        {!this.state.cat_id ? (
                           <Button
                             onClick={() => this.submitform()}
                             bsStyle="warning"
@@ -308,19 +307,6 @@ class UserProfile extends Component {
                           >
                             Save
                           </Button>
-                        ) : (
-                          <Button
-                            onClick={() => this.updateform()}
-                            bsStyle="warning"
-                            style={{
-                              marginLeft: "45%",
-                              height: 40,
-                              width: 120,
-                            }}
-                          >
-                            Update
-                          </Button>
-                        )}
                       </Col>
                     </Row>
                   </form>

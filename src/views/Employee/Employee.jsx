@@ -13,7 +13,7 @@ function Closeit(props) {
   const [isdatableinitialize,setIsdatableinitialize]=useState(false)
   const main = useRef(null);
 useEffect(()=>{
-  new Apimanager().Getroute("employee").then((res) => {
+  new Apimanager().Getroute("employee/detail").then((res) => {
     res.shift();
     console.log(res)
     setEmployees(res)
@@ -56,7 +56,7 @@ useEffect(()=>{
   };
  const deleterecord = (id) => {
     new Apimanager()
-      .deleterouteByid(`employee/${id}`)
+      .deleterouteByid(`employee/detail/${id}`)
       .then((res) => {
         if (res.status === 200) {
           setAlert(<SweetAlert
@@ -69,7 +69,7 @@ useEffect(()=>{
           ></SweetAlert>)
         }
       })
-      .then(() =>new Apimanager().Getroute("employee").then((res) => {
+      .then(() =>new Apimanager().Getroute("employee/detail").then((res) => {
         res.shift();
         setEmployees(res)
       }).catch(e=>console.log(e)));
