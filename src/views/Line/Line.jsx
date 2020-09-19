@@ -1,8 +1,18 @@
 import React,{useState,useEffect,useRef} from "react";
 import Button from "../../components/CustomButton/CustomButton";
+import { Card } from "components/Card/Card.jsx";
 import Apimanager from "../../NodeFunctions/Functions";
 import SweetAlert from "react-bootstrap-sweetalert";
-import {Row,Col} from 'react-bootstrap'
+import { FormInputs } from "components/FormInputs/FormInputs.jsx";
+import {
+  Grid,
+  Row,
+  Col,
+  Modal,
+  Image,
+  DropdownButton,
+  MenuItem,
+} from "react-bootstrap";
 import moment from 'moment'
 import $ from "jquery";
 require("datatables.net-responsive");
@@ -10,6 +20,8 @@ $.DataTable = require("datatables.net-bs");
 
 function Closeit() {
   const [alert,setAlert] = useState(null)
+  const [modal,setModal] = useState(false)
+  const [customer,setCustomer] = useState([])
   const [isDatableInitialize,setIsDatableInitialize] = useState(false)
   const [customers,setCustomers] = useState([])
   const [isLineOpen,setIsLineOpen] = useState(false)
@@ -41,6 +53,7 @@ return diff; // this prints out the age
   }
   useEffect(()=>{
       new Apimanager().Getroute("Admin/party/detail").then((res) => {
+        console.log(res)
        setCustomers(res)
         if (!isDatableInitialize) {
           $("#datatables").DataTable({
@@ -64,21 +77,30 @@ return diff; // this prints out the age
   },[])
   console.log(customers)
     var dataTable = {
-      headerRow: ["Id", "no of customers","time"],
-      dataRows: customers.map((item,i) => [
+      headerRow: ["","party Owner", "no of customers","time"],
+      dataRows: customers.map((item,i) => {
+        var cus = null;
+        var index = null
+        if(item.customers&&item.customers.length>0){
+          index = item.customers.findIndex(item=>item.customer&&item.customer.partyOwner)
+          if(index)
+           cus = item.customers[index].customer.fullName
+        }
+        return[
         item.partyId?item.partyId:'',
+        cus?cus:'',
         item.customers&&item.customers.length>0?item.customers.length :'',
         item.createdAt?moment(item.createdAt).format('HH-mm'):'',
-      ]),
+      ]}),
     };
     return (
       <div style={{ width: "100%", backgroundColor: "#ffffff" }}>
         <div
           className="fresh-datatables"
           style={{
-            width: "90%",
+            width: "70%",
             backgroundColor: "#f9f9f9",
-            marginLeft: "5%",
+            marginLeft: "15%",
             padding: 15,
           }}
         >
@@ -106,6 +128,12 @@ return diff; // this prints out the age
                 <th style={{ fontWeight: "bold", color: "#000000" }}>
                   {dataTable.headerRow[3]}
                 </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[4]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[5]}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -113,7 +141,7 @@ return diff; // this prints out the age
                 return (
                   <tr key={key}>
                     {prop.map((prop, key) => {
-                      return <td key={key}>{prop}</td>;
+                      return <td key={key}>{key==0?'':prop}</td>;
                     })}
                     <td className="text-right">
                       <Button
@@ -122,6 +150,18 @@ return diff; // this prints out the age
                         bsStyle="warning"
                       >
                         Bump up
+                      </Button>
+                    </td>
+                    <td className="text-right">
+                      <Button
+                        style={{ marginRight: 8, width: 115 }}
+                        onClick={()=>{
+                          setCustomer(customers[key].customers)  
+                          setModal(true)
+                        }} 
+                        bsStyle="warning"
+                      >
+                        Participants
                       </Button>
                     </td>
                   </tr>
@@ -133,6 +173,64 @@ return diff; // this prints out the age
           <Row>
                     </Row>
         </div>
+        <Modal show={modal}>
+          <div className="content">
+            <Grid fluid>
+              <Row>
+                <Col md={12}>
+                  <Card
+                    title="Participants"
+                    content={
+                      <form>
+                        <Row>
+                        <Row >
+                                  <Col sm md lg = {2} />
+                                  <Col  sm md lg = {2}>
+                                <label style={{fontWeight:'bold'}} >#</label>
+                                </Col>
+                                  <Col  sm md lg = {4}>
+                                <label style={{fontWeight:'bold'}} >customer name</label>
+                                </Col>
+                                <Col>
+                                <label style={{fontWeight:'bold'}}>Vip status</label>
+                                </Col>
+                                </Row>
+                            {customer.map((item,i)=>{
+                              if(item&&item.customer&&item.customer.fullName)
+                              return(
+                                <Row >
+                                  <Col sm md lg = {2} />
+                                  <Col  sm md lg = {2}>
+                                <label style={{textAlign:'center'}} >{i+1}</label>
+                                </Col>
+                                  <Col  sm md lg = {4}>
+                                <label >{item.customer.fullName}</label>
+                                </Col>
+                                <Col>
+                                <label>{item.customer.vip?'vip customer':'regular customer'}</label>
+                                </Col>
+                                </Row>)
+                            })}
+                          
+                          <Button
+                            style={{ marginLeft: "46%" }}
+                            bsStyle="warning"
+                            onClick={() =>{
+                             setModal(false);
+                             setCustomer([])
+                            }}
+                          >
+                            Close
+                          </Button>
+                        </Row>
+                      </form>
+                    }
+                  />
+                </Col>
+              </Row>
+            </Grid>
+          </div>
+          </Modal>
         {alert}
       </div>
     );

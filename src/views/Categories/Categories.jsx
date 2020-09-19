@@ -59,8 +59,64 @@ class Closeit extends React.Component {
       }
     });
   }
-  editrecord=(prop)=>{
+  editrecord=(prop,key,key1)=>{
+    if(key1=='open'){
+      new Apimanager().PutrouteByid("admin/opentable/",{barTableId:prop[0]}).then((res) => {
+        console.log(res)
+          if(res.status == 200)
+          this.setState({
+            alert: (
+              <SweetAlert
+                warning
+                style={{ display: "block", marginTop: "100px" }}
+                title={res.data.message}
+                onConfirm={() => this.setState({ alert: null })}
+                onCancel={() => this.setState({ alert: null })}
+                confirmBtnBsStyle="warning"
+              ></SweetAlert>
+            ),
+          });
+          this.componentDidMount()
+      })
+    }else{
     new Apimanager().PutrouteByid("admin/making/tables/"+prop[0]).then((res) => {
+      if(res.data)
+      this.setState({
+        alert: (
+          <SweetAlert
+            warning
+            style={{ display: "block", marginTop: "100px" }}
+            title={res.data.message}
+            onConfirm={() => this.setState({ alert: null })}
+            onCancel={() => this.setState({ alert: null })}
+            confirmBtnBsStyle="warning"
+          ></SweetAlert>
+        ),
+      });
+      this.componentDidMount()
+    })
+  }
+  }
+  openBar=()=>{
+    new Apimanager().PutrouteByid("admin/closingbar").then((res) => {
+      if(res.data)
+      this.setState({
+        alert: (
+          <SweetAlert
+            warning
+            style={{ display: "block", marginTop: "100px" }}
+            title={res.data.message}
+            onConfirm={() => this.setState({ alert: null })}
+            onCancel={() => this.setState({ alert: null })}
+            confirmBtnBsStyle="warning"
+          ></SweetAlert>
+        ),
+      });
+      this.componentDidMount()
+    })
+  }
+  closeBar=()=>{
+    new Apimanager().postroute("admin/closingbar").then((res) => {
       if(res.data)
       this.setState({
         alert: (
@@ -87,13 +143,22 @@ class Closeit extends React.Component {
         item.barTableId,
         item.tableNumber,
         item.size,
-        item.status,
+        item.status=='close'?'booked':item.status,
       ]),
     };
 
     return (
       <div style={{ width: "100%", backgroundColor: "#FFFFFF" }}>
-       
+                      <Button
+                        style={{ marginLeft: '37%',marginTop:20,marginBottom:20, width: 120 }}
+                        onClick={this.openBar}
+                        bsStyle="warning"
+                      >Open bar</Button>
+                      <Button
+                        style={{marginLeft: '5%', width: 120 }}
+                        onClick={this.closeBar}
+                        bsStyle="warning"
+                      >Close bar</Button>
         <div
           className="fresh-datatables"
           style={{
@@ -139,13 +204,13 @@ class Closeit extends React.Component {
                     {prop.map((prop, key) => {
                       return <td key={key}>{prop}</td>;
                     })}
-                  {(prop[3]=='open'||prop[3]=='disable')? <td className="text-right">
+                  {(prop[3]=='open'||prop[3]=='disable'||prop[3]=='booked')? <td className="text-right">
                       <Button
                         style={{ marginRight: 8, width: 80 }}
-                        onClick={() => this.editrecord(prop, key)}
+                        onClick={() => prop[3]=='booked'?this.editrecord(prop, key,'open'):this.editrecord(prop, key)}
                         bsStyle="warning"
                       >
-                        {prop[3]=='open'? 'Disable':'open'}
+                        {prop[3]=='close'?'open':prop[3]=='open'? 'Disable':'open'}
                       </Button>
                     </td>:<td className="text-right"></td>}
                     {/*  <td>
