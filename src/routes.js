@@ -1,4 +1,3 @@
-
 import Login from "./views/Login/Loginandregister";
 import Manageaccount from "views/Settings/Manageaccount";
 import Manageprofile from "views/Settings/Manageprofile";
@@ -70,13 +69,13 @@ const dashboardRoutes = [
 
   //-------------------------------------------------------Line------------------------------------------------
 
-  // {
-  //   path: "/addline",
-  //   name: "Add Line",
-  //   icon: "pe-7s-user",
-  //   component: AddLine,
-  //   layout: "/admin",
-  // },
+  {
+    path: "/addline",
+    name: "Dashboard",
+    icon: "pe-7s-user",
+    component: AddLine,
+    layout: "/admin",
+  },
   {
     path: "/line",
     name: "Line",
@@ -86,13 +85,14 @@ const dashboardRoutes = [
   },
 
   //------------------------------------------------------------Customers----------------------------------------------------
-  // {
-  //   path: "/addcustomer",
-  //   name: "Add Customer",
-  //   icon: "pe-7s-user",
-  //   component: AddCustomers,
-  //   layout: "/admin",
-  // },
+  {
+    path: "/addcustomer",
+    name: "Add Customer",
+    icon: "pe-7s-user",
+    component: AddCustomers,
+    layout: "/admin",
+    redirect: true,
+  },
   {
     path: "/customer",
     name: "Customer",
@@ -143,7 +143,7 @@ const dashboardRoutes = [
   //   // redirect: true,
   // },
   {
-    path: "/categories",
+    path: "/bartables",
     name: "Bar Tables",
     icon: "pe-7s-note2",
     component: Categories,
