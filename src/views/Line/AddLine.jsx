@@ -27,17 +27,14 @@ function Closeit() {
   const [customer, setCustomer] = useState([]);
   const [isDatableInitialize, setIsDatableInitialize] = useState(false);
   const [customers, setCustomers] = useState([]);
-  const [totalCap, setTotalCap] = useState(null);
+  const [isVip, setIsVip] = useState(null);
   const [amount, setAmount] = useState(null);
   const [remainingCap, setRemainingCap] = useState(null);
   const main = useRef(null);
   useEffect(() => {
-    new Apimanager().Getroute("Admin/bardetail").then((res) => {
-      setTotalCap(res.totalCapacity);
-      setRemainingCap(res.remainigCapacity);
-    });
     new Apimanager().Getroute("Admin/detail/card").then((res) => {
       setIsCard(!res.success);
+      setIsVip(res.vip);
     });
     new Apimanager().Getroute("Admin/bardetail/all").then((res) => {
       console.log(res);
@@ -92,12 +89,18 @@ function Closeit() {
       ];
     }),
   };
-  const unSetCard = () => {
-    new Apimanager()
-      .postroute("Admin/detail/card", { amount: null, payment: false })
-      .then((res) => {
-        setIsCard(true);
+  const unSetCard = (i) => {
+    if (i) {
+      new Apimanager().postroute("Admin/detail/card", { ...i }).then((res) => {
+        setIsVip(i.vip);
       });
+    } else {
+      new Apimanager()
+        .postroute("Admin/detail/card", { amount: null, payment: false, ...i })
+        .then((res) => {
+          setIsCard(true);
+        });
+    }
   };
   const setCard = () => {
     if (!amount) {
@@ -133,11 +136,18 @@ function Closeit() {
           paddingBottom: "2%",
         }}
       >
-        <span>Total Capacity: {totalCap}</span>
-        <span style={{ marginLeft: "25%" }}>
-          Remaining Capacity: {remainingCap}
+        <span>
+          {!isVip ? (
+            <Button bsStyle="warning" onClick={() => unSetCard({ vip: true })}>
+              set table for vip
+            </Button>
+          ) : (
+            <Button bsStyle="warning" onClick={() => unSetCard({ vip: false })}>
+              set table for all
+            </Button>
+          )}
         </span>
-        <span style={{ marginLeft: "25%" }}>
+        <span style={{ marginLeft: "50%" }}>
           {isCard ? (
             <Button
               bsStyle="warning"

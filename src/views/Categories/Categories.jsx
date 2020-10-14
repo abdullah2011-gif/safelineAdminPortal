@@ -29,14 +29,19 @@ class Closeit extends React.Component {
       modal: false,
       location: "",
       isdatableinitialize: false,
+      minSize: null,
+      totalCap: null,
+      remainingCap: null,
     };
   }
   createTable = () => {
+    console.log(this.state.location);
     new Apimanager()
       .postroute("admin/making/tables", {
         tableNumber: this.state.tableNumber,
         size: this.state.size,
         location: this.state.location,
+        minSize: this.state.minSize,
       })
       .then((res) => {
         console.log(res);
@@ -45,6 +50,12 @@ class Closeit extends React.Component {
       });
   };
   componentDidMount() {
+    new Apimanager().Getroute("Admin/bardetail").then((res) => {
+      this.setState({
+        totalCap: res.totalCapacity,
+        remainingCap: res.remainigCapacity,
+      });
+    });
     new Apimanager().Getroute("admin/making/tables").then((res) => {
       this.setState({
         category_detail: res,
@@ -148,11 +159,20 @@ class Closeit extends React.Component {
   }
   render() {
     var dataTable = {
-      headerRow: ["Id", "Table number", "Table size", "Status"],
+      headerRow: [
+        "Id",
+        "Table number",
+        "Minimum size",
+        "Maximum size",
+        "Location",
+        "Status",
+      ],
       dataRows: this.state.category_detail.map((item) => [
         item.barTableId,
         item.tableNumber,
+        item.minSize,
         item.size,
+        item.location,
         item.status == "close" ? "booked" : item.status,
       ]),
     };
@@ -187,6 +207,16 @@ class Closeit extends React.Component {
             backgroundColor: "#f9f9f9",
           }}
         >
+          {/* <div
+            style={{
+              backgroundColor: "white",
+              paddingLeft: "15%",
+              paddingTop: "2%",
+              paddingBottom: "2%",
+            }}
+          > */}
+
+          {/* </div> */}
           <Button
             round={true}
             pullRight
@@ -195,6 +225,13 @@ class Closeit extends React.Component {
           >
             Add table
           </Button>
+          <div>
+            <span>Total Capacity: {this.state.totalCap}</span>
+            <span style={{ marginLeft: "10%" }}>
+              Remaining Capacity: {this.state.remainingCap}
+            </span>
+          </div>
+          <span style={{ marginLeft: "10%" }}></span>
           <table
             scrollX={true}
             id="datatables"
@@ -220,6 +257,12 @@ class Closeit extends React.Component {
                 </th>
                 <th style={{ fontWeight: "bold", color: "#000000" }}>
                   {dataTable.headerRow[4]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[5]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[6]}
                 </th>
               </tr>
             </thead>
@@ -295,26 +338,59 @@ class Closeit extends React.Component {
                                 },
                               },
                               {
-                                label: "Table size",
+                                label: "Minimum Table size",
                                 type: "number",
-                                defaultValue: this.state.size,
+                                defaultValue: this.state.minSize,
                                 bsClass: "form-control",
                                 placeholder: "Table size",
+                                onChange: (evt) => {
+                                  this.setState({
+                                    minSize: evt.target.value,
+                                  });
+                                },
+                              },
+                            ]}
+                          />
+                          <FormInputs
+                            ncols={["col-md-6", "col-md-6"]}
+                            properties={[
+                              {
+                                label: "Maximum Table Size",
+                                type: "number",
+                                bsClass: "form-control",
+                                placeholder: "Table number",
+                                defaultValue: this.state.size,
                                 onChange: (evt) => {
                                   this.setState({
                                     size: evt.target.value,
                                   });
                                 },
                               },
+                              {
+                                label: "Location",
+                                control: true,
+                                defaultValue: this.state.size,
+                                child: [
+                                  { title: "Inside", value: "Inside" },
+                                  { title: "Deck", value: "Deck" },
+                                  { title: "Club Rush", value: "Club Rush" },
+                                  {
+                                    title: "Parking Lot",
+                                    value: "Parking Lot",
+                                  },
+                                ],
+                                placeholder: "Location",
+                                variant: "outline-secondary",
+                                title: "Location",
+                                id: "input-group-dropdown-2",
+                                onChange: (evt) => {
+                                  this.setState({
+                                    location: evt.target.value,
+                                  });
+                                },
+                              },
                             ]}
                           />
-                          <select className={"input-group"}>
-                            Location
-                            <option></option>
-                            <option></option>
-                            <option></option>
-                            <option></option>
-                          </select>
                           <Col></Col>
                           <Button
                             style={{ marginLeft: "35%" }}

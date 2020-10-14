@@ -95,7 +95,7 @@ function Closeit(props) {
       "customer/detail/" + customers[i]._id
     );
     new Apimanager().Getroute("customer/detail").then((res) => {
-      // res.shift();
+      setAlert(null);
       setCustomers(res);
     });
   };

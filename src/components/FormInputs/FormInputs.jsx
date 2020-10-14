@@ -16,14 +16,43 @@
 
 */
 import React, { Component } from "react";
-import { FormGroup, ControlLabel, FormControl, Row } from "react-bootstrap";
+import {
+  FormGroup,
+  Dropdown,
+  ControlLabel,
+  Form,
+  FormControl,
+  InputGroup,
+  Row,
+  DropdownButton,
+} from "react-bootstrap";
 
 function FieldGroup({ label, ...props }) {
   return (
-    <FormGroup>
-      <ControlLabel>{label}</ControlLabel>
-      <FormControl {...props} />
-    </FormGroup>
+    <>
+      {props.control ? (
+        <InputGroup>
+          <ControlLabel>{label}</ControlLabel>
+          <div />
+          <select {...props}>
+            <option></option>
+            {props.child.map((i) => {
+              return <option value={i.value}>{i.title}</option>;
+            })}
+            {/* <Dropdown.Item href="#">Action</Dropdown.Item>
+            <Dropdown.Item href="#">Another action</Dropdown.Item>
+            <Dropdown.Item href="#">Something else here</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item href="#">Separated link</Dropdown.Item> */}
+          </select>
+        </InputGroup>
+      ) : (
+        <FormGroup>
+          <ControlLabel>{label}</ControlLabel>
+          <FormControl {...props} />
+        </FormGroup>
+      )}
+    </>
   );
 }
 
