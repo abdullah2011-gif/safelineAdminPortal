@@ -89,6 +89,7 @@ function Closeit() {
     }),
   };
   const unSetCard = (i) => {
+    console.log(i);
     if (i) {
       new Apimanager().postroute("Admin/detail/card", { ...i }).then((res) => {
         setIsVip(i.vip);
@@ -157,7 +158,7 @@ function Closeit() {
               Set Cover Charges
             </Button>
           ) : (
-            <Button bsStyle="warning" onClick={unSetCard}>
+            <Button bsStyle="warning" onClick={() => unSetCard(null)}>
               Disable Cover Charges
             </Button>
           )}
