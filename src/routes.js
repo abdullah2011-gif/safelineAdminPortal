@@ -134,14 +134,14 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   //--------------------------------------------------------Categories-------------------------------------------------------
-  // {
-  //   path: "/addcategories",
-  //   name: "Add Categories",
-  //   icon: "pe-7s-user",
-  //   component: Addcategories,
-  //   layout: "/admin",
-  //   // redirect: true,
-  // },
+  {
+    path: "/addcategories",
+    name: "Parties",
+    icon: "pe-7s-user",
+    component: Addcategories,
+    layout: "/admin",
+    // redirect: true,
+  },
   {
     path: "/bartables",
     name: "Bar Tables",

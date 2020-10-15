@@ -62,13 +62,7 @@ function Closeit() {
   }, []);
   console.log(customers);
   var dataTable = {
-    headerRow: [
-      "",
-      "party Owner",
-      "no of customers",
-      "Enter Time",
-      "Exit Time",
-    ],
+    headerRow: ["", "no of customers", "Enter Time", "Exit Time"],
     dataRows: customers.map((item, i) => {
       var cus = null;
       var index = null;
@@ -76,11 +70,16 @@ function Closeit() {
         index = item.customers.findIndex(
           (item) => item.customer && item.customer.partyOwner
         );
-        if (index) cus = item.customers[index].customer.fullName;
+        if (index)
+          cus =
+            item.customers &&
+            item.customers[index] &&
+            item.customers[index].customer &&
+            item.customers[index].customer.fullName;
       }
       return [
         item.partyId ? item.partyId : "",
-        cus ? cus : "",
+        // cus ? cus : "",
         item.customers && item.customers.length > 0
           ? item.customers.length
           : "",
