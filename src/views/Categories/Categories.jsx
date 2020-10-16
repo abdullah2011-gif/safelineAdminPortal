@@ -14,6 +14,8 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { Card } from "components/Card/Card.jsx";
 import $ from "jquery";
+import Axios from "axios";
+import config from "../../config";
 
 require("datatables.net-responsive");
 $.DataTable = require("datatables.net-bs");
@@ -77,6 +79,8 @@ class Closeit extends React.Component {
     });
   }
   editrecord = (prop, key, key1) => {
+    // console.log(prop, key, key1);
+    // return;
     if (key1 == "open") {
       new Apimanager()
         .PutrouteByid("admin/opentable/", { barTableId: prop[0] })
@@ -157,6 +161,28 @@ class Closeit extends React.Component {
   componentWillUnmount() {
     $(".data-table-wrapper").find("table").DataTable().destroy(true);
   }
+  delete = (id) => {
+    Axios.delete(`${config.url}admin/making/tables/${id}`)
+      .then((res) => {
+        if (res.data && res.data.success) {
+          this.componentDidMount();
+          this.setState({ alert: null });
+        } else
+          this.setState({
+            alert: (
+              <SweetAlert
+                warning
+                style={{ display: "block", marginTop: "100px" }}
+                title={"Cannot delete table now please open the table!"}
+                onConfirm={() => this.setState({ alert: null })}
+                onCancel={() => this.setState({ alert: null })}
+                confirmBtnBsStyle="warning"
+              ></SweetAlert>
+            ),
+          });
+      })
+      .catch((e) => console.log(e));
+  };
   render() {
     var dataTable = {
       headerRow: [
@@ -264,6 +290,9 @@ class Closeit extends React.Component {
                 <th style={{ fontWeight: "bold", color: "#000000" }}>
                   {dataTable.headerRow[6]}
                 </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[7]}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -273,22 +302,22 @@ class Closeit extends React.Component {
                     {prop.map((prop, key) => {
                       return <td key={key}>{prop}</td>;
                     })}
-                    {prop[3] == "open" ||
-                    prop[3] == "disable" ||
-                    prop[3] == "booked" ? (
+                    {prop[5] == "open" ||
+                    prop[5] == "disable" ||
+                    prop[5] == "booked" ? (
                       <td className="text-right">
                         <Button
                           style={{ marginRight: 8, width: 80 }}
                           onClick={() =>
-                            prop[3] == "booked"
+                            prop[5] == "booked"
                               ? this.editrecord(prop, key, "open")
                               : this.editrecord(prop, key)
                           }
                           bsStyle="warning"
                         >
-                          {prop[3] == "close"
+                          {prop[5] == "close"
                             ? "open"
-                            : prop[3] == "open"
+                            : prop[5] == "open"
                             ? "Disable"
                             : "open"}
                         </Button>
@@ -296,15 +325,31 @@ class Closeit extends React.Component {
                     ) : (
                       <td className="text-right"></td>
                     )}
-                    {/*  <td>
+                    <td>
                       <Button
                         style={{ width: 70 }}
-                        onClick={() => this.modalVisible(prop[0])}
+                        onClick={() =>
+                          this.setState({
+                            alert: (
+                              <SweetAlert
+                                warning
+                                style={{ display: "block", marginTop: "100px" }}
+                                title={"Do you want to delete table!"}
+                                onConfirm={() => this.delete(prop[0])}
+                                onCancel={() => this.setState({ alert: null })}
+                                confirmBtnBsStyle="warning"
+                                confirmBtnText="yes"
+                                cancelBtnText="No"
+                                showCancel={true}
+                              ></SweetAlert>
+                            ),
+                          })
+                        }
                         bsStyle="danger"
                       >
                         Delete
                       </Button>
-                    </td> */}
+                    </td>
                   </tr>
                 );
               })}
@@ -410,7 +455,7 @@ class Closeit extends React.Component {
                             bsStyle="warning"
                             onClick={this.createTable}
                           >
-                            Open table
+                            add table
                           </Button>
                         </Row>
                       </form>

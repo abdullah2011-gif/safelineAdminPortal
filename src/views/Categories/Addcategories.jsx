@@ -64,16 +64,20 @@ function Closeit() {
     dataRows: customers.map((item, i) => {
       var cus = null;
       var index = null;
-      if (item.customers && item.customers.length > 0) {
+      if (item && item.customers && item.customers.length > 0) {
         index = item.customers.findIndex(
           (item) => item.customer && item.customer.partyOwner
         );
-        if (index) cus = item.customers[index].customer.fullName;
+        if (index)
+          cus =
+            item &&
+            item.customers[index] &&
+            item.customers[index].customer.fullName;
       }
       return [
         item.partyId ? item.partyId : "",
         cus ? cus : "",
-        item.customers && item.customers.length > 0
+        item && item.customers && item.customers.length > 0
           ? item.customers.length
           : "",
         item.createdAt ? moment(item.createdAt).format("HH-mm") : "",
