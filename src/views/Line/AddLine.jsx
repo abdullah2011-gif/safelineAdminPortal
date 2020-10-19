@@ -83,8 +83,8 @@ function Closeit() {
         item.customers && item.customers.length > 0
           ? item.customers.length
           : "",
-        item.createdAt ? moment(item.enteredBarTime).format("HH-mm") : "",
-        item.createdAt ? moment(item.exitBarTime).format("HH-mm") : "",
+        item.createdAt ? moment(item.enteredBarTime).format("hh-mm A") : "",
+        item.createdAt ? moment(item.exitBarTime).format("hh-mm A") : "",
       ];
     }),
   };

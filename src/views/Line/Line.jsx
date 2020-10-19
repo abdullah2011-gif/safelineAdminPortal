@@ -94,7 +94,7 @@ function Closeit() {
         item.customers && item.customers.length > 0
           ? item.customers.length
           : "",
-        item.createdAt ? moment(item.createdAt).format("HH-mm") : "",
+        item.createdAt ? moment(item.createdAt).format("hh-mm A") : "",
         item.table ? item.table.tableNumber : "",
         item.table ? item.table.location : "",
       ];
