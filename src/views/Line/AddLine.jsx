@@ -261,29 +261,35 @@ function Closeit() {
                               </label>
                             </Col>
                           </Row>
-                          {customer.map((item, i) => {
-                            if (item && item.customer && item.customer.fullName)
-                              return (
-                                <Row>
-                                  <Col sm md lg={2} />
-                                  <Col sm md lg={2}>
-                                    <label style={{ textAlign: "center" }}>
-                                      {i + 1}
-                                    </label>
-                                  </Col>
-                                  <Col sm md lg={4}>
-                                    <label>{item.customer.fullName}</label>
-                                  </Col>
-                                  <Col>
-                                    <label>
-                                      {item.customer.vip
-                                        ? "vip customer"
-                                        : "regular customer"}
-                                    </label>
-                                  </Col>
-                                </Row>
-                              );
-                          })}
+                          {customer &&
+                            customer.length > 0 &&
+                            customer.map((item, i) => {
+                              if (
+                                item &&
+                                item.customer &&
+                                item.customer.fullName
+                              )
+                                return (
+                                  <Row>
+                                    <Col sm md lg={2} />
+                                    <Col sm md lg={2}>
+                                      <label style={{ textAlign: "center" }}>
+                                        {i + 1}
+                                      </label>
+                                    </Col>
+                                    <Col sm md lg={4}>
+                                      <label>{item.customer.fullName}</label>
+                                    </Col>
+                                    <Col>
+                                      <label>
+                                        {item.customer.vip
+                                          ? "vip customer"
+                                          : "regular customer"}
+                                      </label>
+                                    </Col>
+                                  </Row>
+                                );
+                            })}
 
                           <Button
                             style={{ marginLeft: "46%" }}

@@ -28,8 +28,7 @@ function Closeit() {
   };
   useEffect(() => {
     new Apimanager().Getroute("Admin/party/detailconfirmed").then((res) => {
-      console.log(res);
-      setCustomers(res);
+      if (res && res.length > 0) setCustomers(res);
       if (!isDatableInitialize) {
         $("#datatables").DataTable({
           pagingType: "full_numbers",
@@ -60,6 +59,7 @@ function Closeit() {
       "Table Status",
       "Table Number",
       "Table Location",
+      "Participants",
     ],
     dataRows: customers.map((item, i) => {
       var cus = null;
@@ -143,8 +143,21 @@ function Closeit() {
                   {prop.map((prop, key) => {
                     return <td key={key}>{key == 0 ? "" : prop}</td>;
                   })}
-                  <td className="text-right">
-                    <Button
+                  <td style={{ width: "20%" }} className="text-right">
+                    {customers &&
+                      customers[key] &&
+                      customers[key].customers &&
+                      customers[key].customers.length > 0 &&
+                      customers[key].customers.map((item, index) => {
+                        console.log(item + "item");
+                        return (
+                          <label>
+                            {index != 0 && ", "}
+                            {item && item.customer && item.customer.fullName}
+                          </label>
+                        );
+                      })}
+                    {/* <Button
                       style={{ marginRight: 8, width: 115 }}
                       onClick={() => {
                         setCustomer(customers[key].customers);
@@ -153,14 +166,14 @@ function Closeit() {
                       bsStyle="warning"
                     >
                       Participants
-                    </Button>
+                    </Button> */}
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        {console.log(isBarOpen + " " + isLineOpen)}
+        {/* {console.log(isBarOpen + " " + isLineOpen)} */}
         <Row></Row>
       </div>
       <Modal show={modal}>
@@ -189,7 +202,7 @@ function Closeit() {
                             </label>
                           </Col>
                         </Row>
-                        {customer.map((item, i) => {
+                        {/* {customer.map((item, i) => {
                           if (item && item.customer && item.customer.fullName)
                             return (
                               <Row>
@@ -211,7 +224,7 @@ function Closeit() {
                                 </Col>
                               </Row>
                             );
-                        })}
+                        })} */}
 
                         <Button
                           style={{ marginLeft: "46%" }}

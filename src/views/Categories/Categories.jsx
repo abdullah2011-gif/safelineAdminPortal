@@ -17,8 +17,8 @@ import $ from "jquery";
 import Axios from "axios";
 import config from "../../config";
 
-require("datatables.net-responsive");
-$.DataTable = require("datatables.net-bs");
+// require("datatables.net-responsive");
+// $.DataTable = require("datatables.net-bs");
 
 class Closeit extends React.Component {
   constructor(props) {
@@ -62,20 +62,20 @@ class Closeit extends React.Component {
       this.setState({
         category_detail: res,
       });
-      if (!this.state.isdatableinitialize) {
-        $("#datatables").DataTable({
-          pagingType: "full_numbers",
-          lengthMenu: [
-            [10, 25, 50, -1],
-            [10, 25, 50, "All"],
-          ],
-          language: {
-            search: "_INPUT_",
-            searchPlaceholder: "Search records",
-          },
-        });
-        this.setState({ isdatableinitialize: true });
-      }
+      // if (!this.state.isdatableinitialize) {
+      //   $("#datatables").DataTable({
+      //     pagingType: "full_numbers",
+      //     lengthMenu: [
+      //       [10, 25, 50, -1],
+      //       [10, 25, 50, "All"],
+      //     ],
+      //     language: {
+      //       search: "_INPUT_",
+      //       searchPlaceholder: "Search records",
+      //     },
+      //   });
+      //   this.setState({ isdatableinitialize: true });
+      // }
     });
   }
   editrecord = (prop, key, key1) => {
@@ -158,9 +158,9 @@ class Closeit extends React.Component {
       this.componentDidMount();
     });
   };
-  componentWillUnmount() {
-    $(".data-table-wrapper").find("table").DataTable().destroy(true);
-  }
+  // componentWillUnmount() {
+  //   $(".data-table-wrapper").find("table").DataTable().destroy(true);
+  // }
   delete = (id) => {
     Axios.delete(`${config.url}admin/making/tables/${id}`)
       .then((res) => {

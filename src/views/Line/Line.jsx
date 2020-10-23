@@ -47,7 +47,7 @@ function Closeit() {
   };
   useEffect(() => {
     new Apimanager().Getroute("Admin/party/detail").then((res) => {
-      console.log(res);
+      // console.log(res);
       setCustomers(res);
       if (!isDatableInitialize) {
         $("#datatables").DataTable({
@@ -69,7 +69,7 @@ function Closeit() {
       $(".data-table-wrapper").find("table").DataTable().destroy(true);
     };
   }, []);
-  console.log(customers);
+  // console.log(customers);
   var dataTable = {
     headerRow: [
       "",
@@ -78,6 +78,7 @@ function Closeit() {
       "time",
       "Table Number",
       "Table Location",
+      "Participants",
     ],
     dataRows: customers.map((item, i) => {
       var cus = null;
@@ -86,7 +87,13 @@ function Closeit() {
         index = item.customers.findIndex(
           (item) => item.customer && item.customer.partyOwner
         );
-        if (index) cus = item.customers[index].customer.fullName;
+        if (index)
+          cus =
+            item.customers &&
+            item.customers[index] &&
+            item.customers[index].customer &&
+            item.customers[index].customer.fullName;
+        // if (index) cus = item.customers[index].customer.fullName;
       }
       return [
         item.partyId ? item.partyId : "",
@@ -156,6 +163,32 @@ function Closeit() {
                   {prop.map((prop, key) => {
                     return <td key={key}>{key == 0 ? "" : prop}</td>;
                   })}
+                  {/* {console.log(customer)} */}
+                  <td style={{ width: "20%" }} className="text-right">
+                    {customers &&
+                      customers[key] &&
+                      customers[key].customers &&
+                      customers[key].customers.length > 0 &&
+                      customers[key].customers.map((item, index) => {
+                        console.log(item + "item");
+                        return (
+                          <label>
+                            {index != 0 && ", "}
+                            {item && item.customer && item.customer.fullName}
+                          </label>
+                        );
+                      })}
+                    {/* <Button
+                      style={{ marginRight: 8, width: 115 }}
+                      onClick={() => {
+                        setCustomer(customers[key].customers);
+                        setModal(true);
+                      }}
+                      bsStyle="warning"
+                    >
+                      Participants
+                    </Button> */}
+                  </td>
                   <td className="text-right">
                     <Button
                       style={{ marginRight: 8, width: 90 }}
@@ -165,24 +198,12 @@ function Closeit() {
                       Bump up
                     </Button>
                   </td>
-                  <td className="text-right">
-                    <Button
-                      style={{ marginRight: 8, width: 115 }}
-                      onClick={() => {
-                        setCustomer(customers[key].customers);
-                        setModal(true);
-                      }}
-                      bsStyle="warning"
-                    >
-                      Participants
-                    </Button>
-                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        {console.log(isBarOpen + " " + isLineOpen)}
+        {/* {console.log(isBarOpen + " " + isLineOpen)} */}
         <Row></Row>
       </div>
       <Modal show={modal}>
@@ -211,29 +232,35 @@ function Closeit() {
                             </label>
                           </Col>
                         </Row>
-                        {customer.map((item, i) => {
-                          if (item && item.customer && item.customer.fullName)
-                            return (
-                              <Row>
-                                <Col sm md lg={2} />
-                                <Col sm md lg={2}>
-                                  <label style={{ textAlign: "center" }}>
-                                    {i + 1}
-                                  </label>
-                                </Col>
-                                <Col sm md lg={4}>
-                                  <label>{item.customer.fullName}</label>
-                                </Col>
-                                <Col>
-                                  <label>
-                                    {item.customer.vip
-                                      ? "vip customer"
-                                      : "regular customer"}
-                                  </label>
-                                </Col>
-                              </Row>
-                            );
-                        })}
+                        {customer &&
+                          customer.length > 0 &&
+                          customer.map((item, i) => {
+                            if (item && item.customer && item.customer.fullName)
+                              return (
+                                <Row>
+                                  <Col sm md lg={2} />
+                                  <Col sm md lg={2}>
+                                    <label style={{ textAlign: "center" }}>
+                                      {i + 1}
+                                    </label>
+                                  </Col>
+                                  <Col sm md lg={4}>
+                                    <label>
+                                      {item &&
+                                        item.customer &&
+                                        item.customer.fullName}
+                                    </label>
+                                  </Col>
+                                  <Col>
+                                    <label>
+                                      {item.customer.vip
+                                        ? "vip customer"
+                                        : "regular customer"}
+                                    </label>
+                                  </Col>
+                                </Row>
+                              );
+                          })}
 
                         <Button
                           style={{ marginLeft: "46%" }}
