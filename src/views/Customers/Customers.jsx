@@ -41,11 +41,14 @@ function Closeit(props) {
       });
   };
   useEffect(() => {
+    new Apimanager().Getroute("customer/detail/limit").then((res) => {
+      setCustomers(res);
+    });
     new Apimanager().Getroute("customer/detail").then((res) => {
       // res.shift();
       setCustomers(res);
       if (!isDatableInitialize) {
-        $("datatables").DataTable({
+        $("#datatables").DataTable({
           pagingType: "full_numbers",
           lengthMenu: [
             [10, 25, 50, -1],
@@ -157,6 +160,15 @@ function Closeit(props) {
               </th>
               <th style={{ fontWeight: "bold", color: "#000000" }}>
                 {dataTable.headerRow[6]}
+              </th>
+              <th style={{ fontWeight: "bold", color: "#000000" }}>
+                {dataTable.headerRow[7]}
+              </th>
+              <th style={{ fontWeight: "bold", color: "#000000" }}>
+                {dataTable.headerRow[8]}
+              </th>
+              <th style={{ fontWeight: "bold", color: "#000000" }}>
+                {dataTable.headerRow[9]}
               </th>
             </tr>
           </thead>

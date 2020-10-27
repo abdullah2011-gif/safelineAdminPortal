@@ -254,7 +254,7 @@ class Closeit extends React.Component {
           <div>
             <span>Total Capacity: {this.state.totalCap}</span>
             <span style={{ marginLeft: "10%" }}>
-              Remaining Capacity: {this.state.remainingCap}
+              Current Capacity: {this.state.remainingCap}
             </span>
           </div>
           <span style={{ marginLeft: "10%" }}></span>

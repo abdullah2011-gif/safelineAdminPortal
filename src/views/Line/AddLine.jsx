@@ -41,7 +41,7 @@ function Closeit() {
       setCustomers(res);
 
       if (!isDatableInitialize) {
-        $("datatables").DataTable({
+        $("#datatables").DataTable({
           pagingType: "full_numbers",
           lengthMenu: [
             [10, 25, 50, -1],
@@ -62,7 +62,14 @@ function Closeit() {
   }, []);
   console.log(customers);
   var dataTable = {
-    headerRow: ["", "no of customers", "Enter Time", "Exit Time"],
+    headerRow: [
+      "",
+      "Date",
+      "no of customers",
+      "Enter Time",
+      "Exit Time",
+      "Participants",
+    ],
     dataRows: customers.map((item, i) => {
       var cus = null;
       var index = null;
@@ -79,6 +86,7 @@ function Closeit() {
       }
       return [
         item.partyId ? item.partyId : "",
+        item.createdAt ? moment(item.enteredBarTime).format("MM/DD/YYYY") : "",
         // cus ? cus : "",
         item.customers && item.customers.length > 0
           ? item.customers.length
@@ -204,9 +212,6 @@ function Closeit() {
                 <th style={{ fontWeight: "bold", color: "#000000" }}>
                   {dataTable.headerRow[5]}
                 </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[6]}
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -216,7 +221,22 @@ function Closeit() {
                     {prop.map((prop, key) => {
                       return <td key={key}>{key == 0 ? "" : prop}</td>;
                     })}
-                    <td className="text-right">
+                    <td style={{ width: "40%" }} className="text-right">
+                      {customers &&
+                        customers[key] &&
+                        customers[key].customers &&
+                        customers[key].customers.length > 0 &&
+                        customers[key].customers.map((item, index) => {
+                          console.log(item + "item");
+                          return (
+                            <label>
+                              {index != 0 && ", "}
+                              {item && item.customer && item.customer.fullName}
+                            </label>
+                          );
+                        })}
+                    </td>
+                    {/* <td className="text-right">
                       <Button
                         style={{ marginRight: 8, width: 115 }}
                         onClick={() => {
@@ -227,7 +247,7 @@ function Closeit() {
                       >
                         Participants
                       </Button>
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })}
