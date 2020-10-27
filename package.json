@@ -35,6 +35,8 @@
   "devDependencies": {
     "@types/googlemaps": "3.30.19",
     "@types/markerclustererplus": "2.1.33",
+    "jquery": "^1.12.4",
+    "datatables.net": "^2.1.1",
     "@types/react": "16.8.13",
     "typescript": "3.4.3"
   },
