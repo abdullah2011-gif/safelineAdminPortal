@@ -122,42 +122,6 @@ class Closeit extends React.Component {
         });
     }
   };
-  openBar = () => {
-    new Apimanager().PutrouteByid("admin/closingbar").then((res) => {
-      if (res.data)
-        this.setState({
-          alert: (
-            <SweetAlert
-              warning
-              style={{ display: "block", marginTop: "100px" }}
-              title={res.data.message}
-              onConfirm={() => this.setState({ alert: null })}
-              onCancel={() => this.setState({ alert: null })}
-              confirmBtnBsStyle="warning"
-            ></SweetAlert>
-          ),
-        });
-      this.componentDidMount();
-    });
-  };
-  closeBar = () => {
-    new Apimanager().postroute("admin/closingbar").then((res) => {
-      if (res.data)
-        this.setState({
-          alert: (
-            <SweetAlert
-              warning
-              style={{ display: "block", marginTop: "100px" }}
-              title={res.data.message}
-              onConfirm={() => this.setState({ alert: null })}
-              onCancel={() => this.setState({ alert: null })}
-              confirmBtnBsStyle="warning"
-            ></SweetAlert>
-          ),
-        });
-      this.componentDidMount();
-    });
-  };
   // componentWillUnmount() {
   //   $(".data-table-wrapper").find("table").DataTable().destroy(true);
   // }
@@ -205,25 +169,6 @@ class Closeit extends React.Component {
 
     return (
       <div style={{ width: "100%", backgroundColor: "#FFFFFF" }}>
-        <Button
-          style={{
-            marginLeft: "37%",
-            marginTop: 20,
-            marginBottom: 20,
-            width: 120,
-          }}
-          onClick={this.openBar}
-          bsStyle="warning"
-        >
-          Open bar
-        </Button>
-        <Button
-          style={{ marginLeft: "5%", width: 120 }}
-          onClick={this.closeBar}
-          bsStyle="warning"
-        >
-          Close bar
-        </Button>
         <div
           className="fresh-datatables"
           style={{

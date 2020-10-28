@@ -29,35 +29,46 @@ function Closeit() {
   const [customers, setCustomers] = useState([]);
   const [isVip, setIsVip] = useState(null);
   const [amount, setAmount] = useState(null);
+  const [barStatus, setbarStatus] = useState("open");
   const [remainingCap, setRemainingCap] = useState(null);
   const main = useRef(null);
-  useEffect(() => {
+  const getDetail = () => {
     new Apimanager().Getroute("Admin/detail/card").then((res) => {
       setIsCard(!res.success);
       setIsVip(res.vip);
+      setbarStatus(res.barStatus);
     });
+  };
+  useEffect(() => {
+    getDetail();
     new Apimanager().Getroute("Admin/bardetail/all").then((res) => {
       console.log(res);
       setCustomers(res);
-
-      if (!isDatableInitialize) {
-        $("#datatables").DataTable({
-          pagingType: "full_numbers",
-          lengthMenu: [
-            [10, 25, 50, -1],
-            [10, 25, 50, "All"],
-          ],
-          language: {
-            search: "_INPUT_",
-            searchPlaceholder: "Search records",
-          },
-        });
-        setIsDatableInitialize(true);
+      try {
+        if (!isDatableInitialize) {
+          $("#datatables").DataTable({
+            pagingType: "full_numbers",
+            lengthMenu: [
+              [10, 25, 50, -1],
+              [10, 25, 50, "All"],
+            ],
+            language: {
+              search: "_INPUT_",
+              searchPlaceholder: "Search records",
+            },
+          });
+          setIsDatableInitialize(true);
+        }
+      } catch (error) {
+        console.log(error);
       }
     });
-
     return () => {
-      $(".data-table-wrapper").find("table").DataTable().destroy(true);
+      try {
+        $(".data-table-wrapper").find("table").DataTable().destroy(true);
+      } catch (error) {
+        console.log(error);
+      }
     };
   }, []);
   console.log(customers);
@@ -134,17 +145,78 @@ function Closeit() {
         setModal1(false);
       });
   };
+
+  const openBar = () => {
+    new Apimanager().PutrouteByid("admin/closingbar").then((res) => {
+      if (res.data)
+        setAlert(
+          (alert) =>
+            (alert = (
+              <SweetAlert
+                warning
+                style={{ display: "block", marginTop: "100px" }}
+                title={res.data.message}
+                onConfirm={() => setAlert(null)}
+                onCancel={() => setAlert(null)}
+                confirmBtnBsStyle="warning"
+              ></SweetAlert>
+            ))
+        );
+      getDetail();
+    });
+  };
+  const closeBar = () => {
+    new Apimanager().postroute("admin/closingbar").then((res) => {
+      if (res.data)
+        setAlert(
+          (alert) =>
+            (alert = (
+              <SweetAlert
+                warning
+                style={{ display: "block", marginTop: "100px" }}
+                title={res.data.message}
+                onConfirm={() => setAlert(null)}
+                onCancel={() => setAlert(null)}
+                confirmBtnBsStyle="warning"
+              ></SweetAlert>
+            ))
+        );
+      getDetail();
+    });
+  };
   return (
     <>
       <div
         style={{
           backgroundColor: "white",
-          paddingLeft: "15%",
+          paddingLeft: "14%",
           paddingTop: "2%",
           paddingBottom: "2%",
         }}
       >
         <span>
+          <Button
+            style={{
+              marginTop: 20,
+              marginBottom: 20,
+              width: 120,
+            }}
+            onClick={openBar}
+            bsStyle="warning"
+          >
+            Open bar
+          </Button>
+        </span>{" "}
+        <span style={{ marginLeft: "10%" }}>
+          <Button
+            style={{ marginLeft: "5%", width: 120 }}
+            onClick={closeBar}
+            bsStyle="warning"
+          >
+            Close bar
+          </Button>
+        </span>
+        <span style={{ marginLeft: "10%" }}>
           {!isVip ? (
             <Button bsStyle="warning" onClick={() => unSetCard({ vip: true })}>
               set table for vip
@@ -155,7 +227,7 @@ function Closeit() {
             </Button>
           )}
         </span>
-        <span style={{ marginLeft: "50%" }}>
+        <span style={{ marginLeft: "10%" }}>
           {isCard ? (
             <Button
               bsStyle="warning"
@@ -171,7 +243,19 @@ function Closeit() {
             </Button>
           )}
         </span>
+        <h4
+          style={{
+            textAlign: "center",
+            marginRight: "10%",
+            backgroundColor: "white",
+          }}
+        >
+          {barStatus == "	barclosed"
+            ? "Bar is currently closed"
+            : "Bar is currently open"}
+        </h4>
       </div>
+
       <div style={{ width: "100%", backgroundColor: "#ffffff" }}>
         <div
           className="fresh-datatables"

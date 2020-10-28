@@ -49,24 +49,31 @@ function Closeit() {
     new Apimanager().Getroute("Admin/party/detail").then((res) => {
       // console.log(res);
       setCustomers(res);
-      if (!isDatableInitialize) {
-        $("#datatables").DataTable({
-          pagingType: "full_numbers",
-          lengthMenu: [
-            [10, 25, 50, -1],
-            [10, 25, 50, "All"],
-          ],
-          language: {
-            search: "_INPUT_",
-            searchPlaceholder: "Search records",
-          },
-        });
-        setIsDatableInitialize(true);
+      try {
+        if (!isDatableInitialize) {
+          $("#datatables").DataTable({
+            pagingType: "full_numbers",
+            lengthMenu: [
+              [10, 25, 50, -1],
+              [10, 25, 50, "All"],
+            ],
+            language: {
+              search: "_INPUT_",
+              searchPlaceholder: "Search records",
+            },
+          });
+          setIsDatableInitialize(true);
+        }
+      } catch (error) {
+        console.log(error);
       }
     });
-
     return () => {
-      $(".data-table-wrapper").find("table").DataTable().destroy(true);
+      try {
+        $(".data-table-wrapper").find("table").DataTable().destroy(true);
+      } catch (error) {
+        console.log(error);
+      }
     };
   }, []);
   // console.log(customers);

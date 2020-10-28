@@ -106,7 +106,7 @@ function UserProfile() {
                         style={{
                           marginLeft: "45%",
                           height: 40,
-                          width: 120,
+                          width: 150,
                         }}
                       >
                         Send Notification

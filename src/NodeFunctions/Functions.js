@@ -41,7 +41,8 @@ export default class Apimanager {
       }
       return response;
     } catch (error) {
-      return (window.location.href = `/admin/Error`);
+      console.log(error.response.data);
+      // return (window.location.href = `/admin/Error`);
     }
   }
 
