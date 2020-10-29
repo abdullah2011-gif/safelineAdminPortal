@@ -243,6 +243,7 @@ function Closeit() {
             </Button>
           )}
         </span>
+        {console.log(barStatus)}
         <h4
           style={{
             textAlign: "center",
@@ -250,7 +251,7 @@ function Closeit() {
             backgroundColor: "white",
           }}
         >
-          {barStatus == "disable"
+          {barStatus == "barclosed"
             ? "Bar is currently closed"
             : "Bar is currently open"}
         </h4>
