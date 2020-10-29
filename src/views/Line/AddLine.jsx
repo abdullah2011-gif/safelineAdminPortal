@@ -250,7 +250,7 @@ function Closeit() {
             backgroundColor: "white",
           }}
         >
-          {barStatus == "	barclosed"
+          {barStatus == "disable"
             ? "Bar is currently closed"
             : "Bar is currently open"}
         </h4>
