@@ -7,7 +7,7 @@ import AddLine from "views/Line/AddLine";
 import AddCustomers from "views/Customers/AddCustomers";
 import Customers from "views/Customers/Customers";
 import Notifications from "views/Notifications/Notifications";
-// import Addmembership from "views/Memberships/Addmembership";
+import Entries from "./views/Notifications/Addmembership";
 import Categories from "views/Categories/Categories";
 import Addcategories from "views/Categories/Addcategories";
 import AddEmployee from "views/Employee/AddEmployee";
@@ -118,14 +118,13 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   //------------------------------------------------------------------Notifications-----------------------------------------
-  // {
-  //   path: "/admembership",
-  //   name: "Add Membership",
-  //   icon: "pe-7s-user",
-  //   component: Addmembership,
-  //   layout: "/admin",
-  //   redirect: true,
-  // },
+  {
+    path: "/entries",
+    name: "Entries",
+    icon: "pe-7s-user",
+    component: Entries,
+    layout: "/admin",
+  },
   {
     path: "/notifications",
     name: "Notifications",
