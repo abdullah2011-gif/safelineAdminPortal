@@ -1,17 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import Button from "../../components/CustomButton/CustomButton";
+import { Card } from "components/Card/Card.jsx";
 import Apimanager from "../../NodeFunctions/Functions";
 import SweetAlert from "react-bootstrap-sweetalert";
+import { FormInputs } from "components/FormInputs/FormInputs.jsx";
+import {
+  Grid,
+  Row,
+  Col,
+  Modal,
+  Image,
+  DropdownButton,
+  MenuItem,
+} from "react-bootstrap";
 import moment from "moment";
 import $ from "jquery";
-
+import { CardBody } from "reactstrap";
 require("datatables.net-responsive");
 $.DataTable = require("datatables.net-bs");
 
-function Closeit(props) {
+function Closeit() {
   const [alert, setAlert] = useState(null);
-  const [employees, setEmployees] = useState([]);
   const [isDatableInitialize, setIsDatableInitialize] = useState(false);
+  const [employees, setEmployees] = useState([]);
   const main = useRef(null);
   useEffect(() => {
     new Apimanager().Getroute("admin/party/entries").then((res) => {
@@ -44,13 +55,6 @@ function Closeit(props) {
       }
     };
   }, []);
-
-  const calculateAge = (age) => {
-    var a = moment();
-    var b = moment(age, "DD/MM/YYYY");
-    var diff = a.diff(b, "years");
-    return diff;
-  };
   var dataTable = {
     headerRow: [
       "Date",
@@ -72,65 +76,94 @@ function Closeit(props) {
         "",
     ]),
   };
-
   return (
-    <div style={{ width: "100%", backgroundColor: "#ffffff" }}>
-      <div
-        className="fresh-datatables"
-        style={{
-          width: "90%",
-          backgroundColor: "#f9f9f9",
-          marginLeft: "5%",
-          padding: 15,
-        }}
-      >
-        <table
-          scrollX={true}
-          id="datatables"
-          ref={main}
-          onScroll={true}
-          className="table table-striped table-no-bordered table-hover"
-          cellSpacing="0"
-          align="center"
-          style={{ width: "100%" }}
+    <>
+      <div style={{ width: "100%", backgroundColor: "#ffffff" }}>
+        <div
+          className="fresh-datatables"
+          style={{
+            width: "70%",
+            backgroundColor: "#f9f9f9",
+            marginLeft: "15%",
+            padding: 15,
+          }}
         >
-          <thead>
-            <tr>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[0]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[1]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[2]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[3]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[4]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[5]}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable.dataRows.map((prop, key) => {
-              return (
-                <tr key={key}>
-                  {prop.map((prop, key) => {
-                    return <td key={key}>{prop}</td>;
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+          <table
+            scrollX={true}
+            id="datatables"
+            ref={main}
+            onScroll={true}
+            className="table table-striped table-no-bordered table-hover"
+            cellSpacing="0"
+            align="center"
+            style={{ width: "100%" }}
+          >
+            <thead>
+              <tr>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[0]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[1]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[2]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[3]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[4]}
+                </th>
+                <th style={{ fontWeight: "bold", color: "#000000" }}>
+                  {dataTable.headerRow[5]}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataTable.dataRows.map((prop, key) => {
+                return (
+                  <tr key={key}>
+                    {prop.map((prop, key) => {
+                      return <td key={key}>{key == 0 ? "" : prop}</td>;
+                    })}
+                    {/* <td style={{ width: "40%" }} className="text-right">
+                      {customers &&
+                        customers[key] &&
+                        customers[key].customers &&
+                        customers[key].customers.length > 0 &&
+                        customers[key].customers.map((item, index) => {
+                          console.log(item + "item");
+                          return (
+                            <label>
+                              {index != 0 && ", "}
+                              {item && item.customer && item.customer.fullName}
+                            </label>
+                          );
+                        })}
+                    </td> */}
+                    {/* <td className="text-right">
+                      <Button
+                        style={{ marginRight: 8, width: 115 }}
+                        onClick={() => {
+                          setCustomer(customers[key].customers);
+                          setModal(true);
+                        }}
+                        bsStyle="warning"
+                      >
+                        Participants
+                      </Button>
+                    </td> */}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <Row></Row>
+        </div>
+        {alert}
       </div>
-      {alert}
-    </div>
+    </>
   );
 }
 

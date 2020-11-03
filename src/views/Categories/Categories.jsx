@@ -237,12 +237,12 @@ class Closeit extends React.Component {
                     })}
                     {prop[5] == "open" ||
                     prop[5] == "disable" ||
-                    prop[5] == "booked" ? (
+                    prop[5] == "Seated" ? (
                       <td className="text-right">
                         <Button
                           style={{ marginRight: 8, width: 80 }}
                           onClick={() =>
-                            prop[5] == "booked"
+                            prop[5] == "Seated"
                               ? this.editrecord(prop, key, "open")
                               : this.editrecord(prop, key)
                           }

@@ -76,28 +76,28 @@ function Closeit() {
     //     console.log(error);
     //   }
     // };
-    new Apimanager().Getroute("admin/party/entries").then((res) => {
-      console.log(res);
-      setEmployees(res);
-      try {
-        if (!isDatableInitialize) {
-          $("#datatables").DataTable({
-            pagingType: "full_numbers",
-            lengthMenu: [
-              [10, 25, 50, -1],
-              [10, 25, 50, "All"],
-            ],
-            language: {
-              search: "_INPUT_",
-              searchPlaceholder: "Search records",
-            },
-          });
-          setIsDatableInitialize(true);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    });
+    // new Apimanager().Getroute("admin/party/entries").then((res) => {
+    //   console.log(res);
+    //   setEmployees(res);
+    //   try {
+    //     if (!isDatableInitialize) {
+    //       $("#datatables").DataTable({
+    //         pagingType: "full_numbers",
+    //         lengthMenu: [
+    //           [10, 25, 50, -1],
+    //           [10, 25, 50, "All"],
+    //         ],
+    //         language: {
+    //           search: "_INPUT_",
+    //           searchPlaceholder: "Search records",
+    //         },
+    //       });
+    //       setIsDatableInitialize(true);
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // });
     return () => {
       try {
         $(".data-table-wrapper").find("table").DataTable().destroy(true);
@@ -330,7 +330,7 @@ function Closeit() {
               Current Capacity: {remainingCap}
             </span>
           </div>
-          <table
+          {/* <table
             scrollX={true}
             id="datatables"
             ref={main}
@@ -369,7 +369,7 @@ function Closeit() {
                     {prop.map((prop, key) => {
                       return <td key={key}>{key == 0 ? "" : prop}</td>;
                     })}
-                    {/* <td style={{ width: "40%" }} className="text-right">
+                    <td style={{ width: "40%" }} className="text-right">
                       {customers &&
                         customers[key] &&
                         customers[key].customers &&
@@ -383,8 +383,8 @@ function Closeit() {
                             </label>
                           );
                         })}
-                    </td> */}
-                    {/* <td className="text-right">
+                    </td>
+                    <td className="text-right">
                       <Button
                         style={{ marginRight: 8, width: 115 }}
                         onClick={() => {
@@ -395,12 +395,12 @@ function Closeit() {
                       >
                         Participants
                       </Button>
-                    </td> */}
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
-          </table>
+          </table> */}
           <Row></Row>
         </div>
         <Modal show={modal}>

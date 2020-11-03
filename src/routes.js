@@ -102,6 +102,15 @@ const dashboardRoutes = [
     layout: "/admin",
     // redirect: true,
   },
+
+  //------------------------------------------------------------------Notifications-----------------------------------------
+  {
+    path: "/entries",
+    name: "Entries",
+    icon: "pe-7s-user",
+    component: Entries,
+    layout: "/admin",
+  },
   {
     path: "/notifications",
     name: "Notifications",
@@ -142,14 +151,6 @@ const dashboardRoutes = [
     component: Employee,
     layout: "/admin",
   },
-  //------------------------------------------------------------------Notifications-----------------------------------------
-  // {
-  //   path: "/entries",
-  //   name: "Entries",
-  //   icon: "pe-7s-user",
-  //   component: Entries,
-  //   layout: "/admin",
-  // },
 ];
 
 export default dashboardRoutes;
