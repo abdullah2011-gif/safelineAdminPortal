@@ -31,7 +31,7 @@ function Closeit() {
       if (res && res.length > 0) setCustomers(res);
       try {
         if (!isDatableInitialize) {
-          $("#datatables").DataTable({
+          $("#table").DataTable({
             pagingType: "full_numbers",
             lengthMenu: [
               [10, 25, 50, -1],
@@ -108,7 +108,7 @@ function Closeit() {
       >
         <table
           scrollX={true}
-          id="datatables"
+          id="table"
           ref={main}
           onScroll={true}
           className="table table-striped table-no-bordered table-hover"
