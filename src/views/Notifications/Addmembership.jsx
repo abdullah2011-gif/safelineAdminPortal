@@ -55,19 +55,16 @@ function Closeit(props) {
     headerRow: [
       "Date",
       "Customer Name",
-      "age",
-      "User Name",
+      "Email",
+      "Phone Number",
       "Enter Time",
       "Exit Time",
     ],
     dataRows: employees.map((item) => [
-      (item.createdAt && moment(item.createdAt).format("DD/MM/YYYY")) || "",
+      (item.createdAt && moment(item.createdAt).format("MM/DD/YYYY")) || "",
       (item.customer && item.customer.fullName && item.customer.fullName) || "",
-      (item.customer &&
-        item.customer.dateOfBirth &&
-        calculateAge(item.customer.dateOfBirth)) ||
-        "",
-      (item.customer && item.customer.username && item.customer.username) || "",
+      (item.customer && item.customer.email && item.customer.email) || "",
+      (item.customer && item.customer.phone && item.customer.phone) || "",
       (item.createdAt && moment(item.createdAt).format("hh-mm A")) || "",
       (item.party &&
         item.party.exitBarTime &&

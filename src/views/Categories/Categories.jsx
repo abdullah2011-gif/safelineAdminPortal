@@ -52,12 +52,6 @@ class Closeit extends React.Component {
       });
   };
   componentDidMount() {
-    new Apimanager().Getroute("Admin/bardetail").then((res) => {
-      this.setState({
-        totalCap: res.totalCapacity,
-        remainingCap: res.remainigCapacity,
-      });
-    });
     new Apimanager().Getroute("admin/making/tables").then((res) => {
       this.setState({
         category_detail: res,
@@ -196,12 +190,6 @@ class Closeit extends React.Component {
           >
             Add table
           </Button>
-          <div>
-            <span>Total Capacity: {this.state.totalCap}</span>
-            <span style={{ marginLeft: "10%" }}>
-              Current Capacity: {this.state.remainingCap}
-            </span>
-          </div>
           <span style={{ marginLeft: "10%" }}></span>
           <table
             scrollX={true}

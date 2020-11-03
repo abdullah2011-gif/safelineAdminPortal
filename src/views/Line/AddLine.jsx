@@ -30,9 +30,15 @@ function Closeit() {
   const [isVip, setIsVip] = useState(null);
   const [amount, setAmount] = useState(null);
   const [barStatus, setbarStatus] = useState("open");
+  const [employees, setEmployees] = useState([]);
   const [remainingCap, setRemainingCap] = useState(null);
+  const [totalCap, setTotalCap] = useState(null);
   const main = useRef(null);
   const getDetail = () => {
+    new Apimanager().Getroute("Admin/bardetail").then((res) => {
+      setTotalCap(res.totalCapacity);
+      setRemainingCap(res.remainigCapacity);
+    });
     new Apimanager().Getroute("Admin/detail/card").then((res) => {
       setIsCard(!res.success);
       setIsVip(res.vip);
@@ -41,9 +47,38 @@ function Closeit() {
   };
   useEffect(() => {
     getDetail();
-    new Apimanager().Getroute("Admin/bardetail/all").then((res) => {
+    // new Apimanager().Getroute("Admin/bardetail/all").then((res) => {
+    //   console.log(res);
+    //   setCustomers(res);
+    //   try {
+    //     if (!isDatableInitialize) {
+    //       $("#datatables").DataTable({
+    //         pagingType: "full_numbers",
+    //         lengthMenu: [
+    //           [10, 25, 50, -1],
+    //           [10, 25, 50, "All"],
+    //         ],
+    //         language: {
+    //           search: "_INPUT_",
+    //           searchPlaceholder: "Search records",
+    //         },
+    //       });
+    //       setIsDatableInitialize(true);
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // });
+    // return () => {
+    //   try {
+    //     $(".data-table-wrapper").find("table").DataTable().destroy(true);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
+    new Apimanager().Getroute("admin/party/entries").then((res) => {
       console.log(res);
-      setCustomers(res);
+      setEmployees(res);
       try {
         if (!isDatableInitialize) {
           $("#datatables").DataTable({
@@ -72,41 +107,41 @@ function Closeit() {
     };
   }, []);
   console.log(customers);
-  var dataTable = {
-    headerRow: [
-      "",
-      "Date",
-      "no of customers",
-      "Enter Time",
-      "Exit Time",
-      "Participants",
-    ],
-    dataRows: customers.map((item, i) => {
-      var cus = null;
-      var index = null;
-      if (item.customers && item.customers.length > 0) {
-        index = item.customers.findIndex(
-          (item) => item.customer && item.customer.partyOwner
-        );
-        if (index)
-          cus =
-            item.customers &&
-            item.customers[index] &&
-            item.customers[index].customer &&
-            item.customers[index].customer.fullName;
-      }
-      return [
-        item.partyId ? item.partyId : "",
-        item.createdAt ? moment(item.enteredBarTime).format("MM/DD/YYYY") : "",
-        // cus ? cus : "",
-        item.customers && item.customers.length > 0
-          ? item.customers.length
-          : "",
-        item.createdAt ? moment(item.enteredBarTime).format("hh-mm A") : "",
-        item.createdAt ? moment(item.exitBarTime).format("hh-mm A") : "",
-      ];
-    }),
-  };
+  // var dataTable = {
+  //   headerRow: [
+  //     "",
+  //     "Date",
+  //     "no of customers",
+  //     "Enter Time",
+  //     "Exit Time",
+  //     "Participants",
+  //   ],
+  //   dataRows: customers.map((item, i) => {
+  //     var cus = null;
+  //     var index = null;
+  //     if (item.customers && item.customers.length > 0) {
+  //       index = item.customers.findIndex(
+  //         (item) => item.customer && item.customer.partyOwner
+  //       );
+  //       if (index)
+  //         cus =
+  //           item.customers &&
+  //           item.customers[index] &&
+  //           item.customers[index].customer &&
+  //           item.customers[index].customer.fullName;
+  //     }
+  //     return [
+  //       item.partyId ? item.partyId : "",
+  //       item.createdAt ? moment(item.enteredBarTime).format("MM/DD/YYYY") : "",
+  //       // cus ? cus : "",
+  //       item.customers && item.customers.length > 0
+  //         ? item.customers.length
+  //         : "",
+  //       item.createdAt ? moment(item.enteredBarTime).format("hh-mm A") : "",
+  //       item.createdAt ? moment(item.exitBarTime).format("hh-mm A") : "",
+  //     ];
+  //   }),
+  // };
   const unSetCard = (i) => {
     console.log(i);
     if (i) {
@@ -184,6 +219,28 @@ function Closeit() {
       getDetail();
     });
   };
+
+  var dataTable = {
+    headerRow: [
+      "Date",
+      "Customer Name",
+      "Email",
+      "Phone Number",
+      "Enter Time",
+      "Exit Time",
+    ],
+    dataRows: employees.map((item) => [
+      (item.createdAt && moment(item.createdAt).format("MM/DD/YYYY")) || "",
+      (item.customer && item.customer.fullName && item.customer.fullName) || "",
+      (item.customer && item.customer.email && item.customer.email) || "",
+      (item.customer && item.customer.phone && item.customer.phone) || "",
+      (item.createdAt && moment(item.createdAt).format("hh-mm A")) || "",
+      (item.party &&
+        item.party.exitBarTime &&
+        moment(item.party.exitBarTime).format("hh-mm A")) ||
+        "",
+    ]),
+  };
   return (
     <>
       <div
@@ -219,11 +276,11 @@ function Closeit() {
         <span style={{ marginLeft: "10%" }}>
           {!isVip ? (
             <Button bsStyle="warning" onClick={() => unSetCard({ vip: true })}>
-              set table for vip
+              Set entry for VIP
             </Button>
           ) : (
             <Button bsStyle="warning" onClick={() => unSetCard({ vip: false })}>
-              set table for all
+              Set entry for all
             </Button>
           )}
         </span>
@@ -267,6 +324,12 @@ function Closeit() {
             padding: 15,
           }}
         >
+          <div>
+            <span>Total Capacity: {totalCap}</span>
+            <span style={{ marginLeft: "10%" }}>
+              Current Capacity: {remainingCap}
+            </span>
+          </div>
           <table
             scrollX={true}
             id="datatables"
@@ -306,7 +369,7 @@ function Closeit() {
                     {prop.map((prop, key) => {
                       return <td key={key}>{key == 0 ? "" : prop}</td>;
                     })}
-                    <td style={{ width: "40%" }} className="text-right">
+                    {/* <td style={{ width: "40%" }} className="text-right">
                       {customers &&
                         customers[key] &&
                         customers[key].customers &&
@@ -320,7 +383,7 @@ function Closeit() {
                             </label>
                           );
                         })}
-                    </td>
+                    </td> */}
                     {/* <td className="text-right">
                       <Button
                         style={{ marginRight: 8, width: 115 }}

@@ -84,6 +84,31 @@ const dashboardRoutes = [
     layout: "/admin",
   },
 
+  {
+    path: "/bartables",
+    name: "Bar Tables",
+    icon: "pe-7s-note2",
+    component: Categories,
+    layout: "/admin",
+    // redirect: true,
+  },
+
+  //--------------------------------------------------------Categories-------------------------------------------------------
+  {
+    path: "/addcategories",
+    name: "Parties",
+    icon: "pe-7s-user",
+    component: Addcategories,
+    layout: "/admin",
+    // redirect: true,
+  },
+  {
+    path: "/notifications",
+    name: "Notifications",
+    icon: "pe-7s-note2",
+    component: Notifications,
+    layout: "/admin",
+  },
   //------------------------------------------------------------Customers----------------------------------------------------
   {
     path: "/addcustomer",
@@ -118,37 +143,13 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   //------------------------------------------------------------------Notifications-----------------------------------------
-  {
-    path: "/entries",
-    name: "Entries",
-    icon: "pe-7s-user",
-    component: Entries,
-    layout: "/admin",
-  },
-  {
-    path: "/notifications",
-    name: "Notifications",
-    icon: "pe-7s-note2",
-    component: Notifications,
-    layout: "/admin",
-  },
-  //--------------------------------------------------------Categories-------------------------------------------------------
-  {
-    path: "/addcategories",
-    name: "Parties",
-    icon: "pe-7s-user",
-    component: Addcategories,
-    layout: "/admin",
-    // redirect: true,
-  },
-  {
-    path: "/bartables",
-    name: "Bar Tables",
-    icon: "pe-7s-note2",
-    component: Categories,
-    layout: "/admin",
-    // redirect: true,
-  },
+  // {
+  //   path: "/entries",
+  //   name: "Entries",
+  //   icon: "pe-7s-user",
+  //   component: Entries,
+  //   layout: "/admin",
+  // },
 ];
 
 export default dashboardRoutes;
