@@ -17,8 +17,8 @@ import $ from "jquery";
 import Axios from "axios";
 import config from "../../config";
 
-// require("datatables.net-responsive");
-// $.DataTable = require("datatables.net-bs");
+require("datatables.net-responsive");
+$.DataTable = require("datatables.net-bs");
 
 class Closeit extends React.Component {
   constructor(props) {
@@ -144,7 +144,7 @@ class Closeit extends React.Component {
   render() {
     var dataTable = {
       headerRow: [
-        "Id",
+        "",
         "Table number",
         "Minimum size",
         "Maximum size",
@@ -157,7 +157,7 @@ class Closeit extends React.Component {
         item.minSize,
         item.size,
         item.location,
-        item.status == "close" ? "booked" : item.status,
+        item.status == "open" ? "open" : item.status == "close" ? "Seated" : "",
       ]),
     };
 
@@ -233,7 +233,7 @@ class Closeit extends React.Component {
                 return (
                   <tr key={key}>
                     {prop.map((prop, key) => {
-                      return <td key={key}>{prop}</td>;
+                      return <td key={key}>{key == 0 ? "" : prop}</td>;
                     })}
                     {prop[5] == "open" ||
                     prop[5] == "disable" ||

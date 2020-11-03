@@ -7,6 +7,12 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { Grid, Row, Col, Modal } from "react-bootstrap";
 import moment from "moment";
 import $ from "jquery";
+import Axios from "axios";
+import config from "../../config";
+
+import io from "socket.io-client";
+
+var socket = io(`${config.url}`);
 require("datatables.net-responsive");
 $.DataTable = require("datatables.net-bs");
 
@@ -16,8 +22,8 @@ function Closeit() {
   const [customer, setCustomer] = useState([]);
   const [isDatableInitialize, setIsDatableInitialize] = useState(false);
   const [customers, setCustomers] = useState([]);
-  const [isLineOpen, setIsLineOpen] = useState(false);
-  const [isBarOpen, setIsBarOpen] = useState(false);
+  const [tables, setTables] = useState([]);
+  const [party, setParty] = useState(null);
   const main = useRef(null);
   const calculateAge = (age) => {
     var a = moment();
@@ -26,6 +32,20 @@ function Closeit() {
     var diff = a.diff(b, "years"); // calculates patient's age in years
     return diff; // this prints out the age
   };
+  useEffect(() => {
+    socket.on("cancheckbaropen", () => {
+      console.log(
+        "========================socket event in confirm wating============================================"
+      );
+      new Apimanager().Getroute("Admin/party/detail").then((res) => {
+        // console.log(res);
+        setCustomers(res);
+      });
+    });
+    return () => {
+      socket.removeListener();
+    };
+  }, []);
   const editrecord = (prop) => {
     new Apimanager().PutrouteByid("admin/bumpup/" + prop[0]).then((res) => {
       if (res.data)
@@ -76,6 +96,29 @@ function Closeit() {
       }
     };
   }, []);
+  const getTables = (len, id) => {
+    Axios.patch(`${config.url}admin/party/detail`, { len })
+      .then((res) => {
+        setTables(res.data);
+        setModal(true);
+        setParty(id);
+      })
+      .catch((e) => console.log(e));
+  };
+  const assignTable = (id) => {
+    Axios.post(`${config.url}admin/assignParty`, { table: id, party: party })
+      .then((res) => {
+        setTables([]);
+        setParty(null);
+        setModal(false);
+      })
+      .catch((e) => console.log(e));
+  };
+  const deleteTable = (id) => {
+    Axios.put(`${config.url}admin/party/detail`, { id })
+      .then((res) => {})
+      .catch((e) => console.log(e.response.data));
+  };
   // console.log(customers);
   var dataTable = {
     headerRow: [
@@ -85,6 +128,7 @@ function Closeit() {
       "time",
       "Table Number",
       "Table Location",
+      "Status",
       "Participants",
     ],
     dataRows: customers.map((item, i) => {
@@ -111,6 +155,7 @@ function Closeit() {
         item.createdAt ? moment(item.createdAt).format("hh-mm A") : "",
         item.table ? item.table.tableNumber : "",
         item.table ? item.table.location : "",
+        item.table ? "Alloted" : "Waiting",
       ];
     }),
   };
@@ -119,9 +164,8 @@ function Closeit() {
       <div
         className="fresh-datatables"
         style={{
-          width: "70%",
+          width: "100%",
           backgroundColor: "#f9f9f9",
-          marginLeft: "15%",
           padding: 15,
         }}
       >
@@ -161,6 +205,12 @@ function Closeit() {
               <th style={{ fontWeight: "bold", color: "#000000" }}>
                 {dataTable.headerRow[7]}
               </th>
+              <th style={{ fontWeight: "bold", color: "#000000" }}>
+                {dataTable.headerRow[8]}
+              </th>
+              <th style={{ fontWeight: "bold", color: "#000000" }}>
+                {dataTable.headerRow[9]}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -185,25 +235,52 @@ function Closeit() {
                           </label>
                         );
                       })}
-                    {/* <Button
-                      style={{ marginRight: 8, width: 115 }}
-                      onClick={() => {
-                        setCustomer(customers[key].customers);
-                        setModal(true);
-                      }}
-                      bsStyle="warning"
-                    >
-                      Participants
-                    </Button> */}
+                  </td>
+                  <td>
+                    {prop[5] == "" && (
+                      <Button
+                        style={{ marginRight: 8, width: 115 }}
+                        onClick={() => {
+                          var len =
+                            customers &&
+                            customers[key] &&
+                            customers[key].customers &&
+                            customers[key].customers.length;
+                          if (len) getTables(len, prop[0]);
+                          // setCustomer(customers[key].customers);
+                          // setModal(true);
+                        }}
+                        bsStyle="warning"
+                      >
+                        Assign Table
+                      </Button>
+                    )}
+                  </td>
+                  <td>
+                    {
+                      <Button
+                        style={{ marginRight: 8, width: 115 }}
+                        onClick={() => {
+                          deleteTable(prop[0]);
+                          // setCustomer(customers[key].customers);
+                          // setModal(true);
+                        }}
+                        bsStyle="danger"
+                      >
+                        Delete
+                      </Button>
+                    }
                   </td>
                   <td className="text-right">
-                    <Button
-                      style={{ marginRight: 8, width: 90 }}
-                      onClick={() => editrecord(prop, key)}
-                      bsStyle="warning"
-                    >
-                      Bump up
-                    </Button>
+                    {prop[5] == "" && (
+                      <Button
+                        style={{ marginRight: 8, width: 90 }}
+                        onClick={() => editrecord(prop, key)}
+                        bsStyle="warning"
+                      >
+                        Bump up
+                      </Button>
+                    )}
                   </td>
                 </tr>
               );
@@ -223,50 +300,61 @@ function Closeit() {
                   content={
                     <form>
                       <Row>
+                        {console.log(tables)}
                         <Row>
-                          <Col sm md lg={2} />
                           <Col sm md lg={2}>
-                            <label style={{ fontWeight: "bold" }}>#</label>
-                          </Col>
-                          <Col sm md lg={4}>
                             <label style={{ fontWeight: "bold" }}>
-                              customer name
+                              Table #
                             </label>
                           </Col>
-                          <Col>
+                          <Col sm md lg={2}>
+                            <label style={{ fontWeight: "bold" }}>Status</label>
+                          </Col>
+                          <Col sm md lg={2}>
                             <label style={{ fontWeight: "bold" }}>
-                              Vip status
+                              Location
+                            </label>
+                          </Col>
+                          <Col sm md lg={2}>
+                            <label style={{ fontWeight: "bold" }}>
+                              Minimum Size
+                            </label>
+                          </Col>
+                          <Col sm md lg={2}>
+                            <label style={{ fontWeight: "bold" }}>
+                              Maximum size
                             </label>
                           </Col>
                         </Row>
-                        {customer &&
-                          customer.length > 0 &&
-                          customer.map((item, i) => {
-                            if (item && item.customer && item.customer.fullName)
-                              return (
-                                <Row>
-                                  <Col sm md lg={2} />
-                                  <Col sm md lg={2}>
-                                    <label style={{ textAlign: "center" }}>
-                                      {i + 1}
-                                    </label>
-                                  </Col>
-                                  <Col sm md lg={4}>
-                                    <label>
-                                      {item &&
-                                        item.customer &&
-                                        item.customer.fullName}
-                                    </label>
-                                  </Col>
-                                  <Col>
-                                    <label>
-                                      {item.customer.vip
-                                        ? "vip customer"
-                                        : "regular customer"}
-                                    </label>
-                                  </Col>
-                                </Row>
-                              );
+                        {tables &&
+                          tables.length > 0 &&
+                          tables.map((item, i) => {
+                            return (
+                              <Row>
+                                <Col sm md lg={2}>
+                                  <label style={{ textAlign: "center" }}>
+                                    {item.tableNumber}
+                                  </label>
+                                </Col>
+                                <Col sm md lg={2}>
+                                  <label>{item.status}</label>
+                                </Col>
+                                <Col sm md lg={2}>
+                                  <label>{item.location}</label>
+                                </Col>
+                                <Col sm md lg={2}>
+                                  <label>{item.minSize}</label>
+                                </Col>
+                                <Col sm md lg={2}>
+                                  <label>{item.size}</label>
+                                </Col>
+                                <Col sm md lg={2}>
+                                  <Button onClick={() => assignTable(item._id)}>
+                                    Assign
+                                  </Button>
+                                </Col>
+                              </Row>
+                            );
                           })}
 
                         <Button
@@ -274,7 +362,8 @@ function Closeit() {
                           bsStyle="warning"
                           onClick={() => {
                             setModal(false);
-                            setCustomer([]);
+                            setTables([]);
+                            setParty(null);
                           }}
                         >
                           Close
