@@ -1,5 +1,5 @@
 export default {
-  // url: "https://www.goharpers.com/",
+  url: "https://www.goharpers.com/",
   // url: "https://harpers-backend.herokuapp.com/",
   // url: "http://192.168.1.102:8080/",
 };
