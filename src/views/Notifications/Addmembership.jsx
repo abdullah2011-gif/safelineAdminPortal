@@ -66,6 +66,7 @@ function Closeit() {
     ],
     dataRows: employees.map((item) => [
       (item.createdAt && moment(item.createdAt).format("MM/DD/YYYY")) || "",
+      // (item.createdAt && moment(item.createdAt).format("MM/DD/YYYY")) || "",
       (item.customer && item.customer.fullName && item.customer.fullName) || "",
       (item.customer && item.customer.email && item.customer.email) || "",
       (item.customer && item.customer.phone && item.customer.phone) || "",
@@ -125,7 +126,7 @@ function Closeit() {
                 return (
                   <tr key={key}>
                     {prop.map((prop, key) => {
-                      return <td key={key}>{key == 0 ? "" : prop}</td>;
+                      return <td key={key}>{prop}</td>;
                     })}
                     {/* <td style={{ width: "40%" }} className="text-right">
                       {customers &&
