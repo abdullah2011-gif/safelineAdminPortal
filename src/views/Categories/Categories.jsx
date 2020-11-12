@@ -157,7 +157,13 @@ class Closeit extends React.Component {
         item.minSize,
         item.size,
         item.location,
-        item.status == "open" ? "open" : item.status == "close" ? "Seated" : "",
+        item.status == "open"
+          ? "open"
+          : item.status == "close"
+          ? "Seated"
+          : item.status == "disable"
+          ? "disable"
+          : "",
       ]),
     };
 
