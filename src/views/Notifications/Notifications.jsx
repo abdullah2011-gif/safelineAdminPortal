@@ -37,7 +37,7 @@ function UserProfile() {
       return;
     }
     new Apimanager()
-      .postroute(`admin/notification/custom`, { title, body })
+      .postroute(`v1/admin//notification`, { title, body })
       .then((res) => {
         if (res)
           setAlert(

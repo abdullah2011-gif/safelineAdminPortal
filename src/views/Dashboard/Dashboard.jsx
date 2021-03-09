@@ -25,134 +25,41 @@ function Closeit() {
   const [modal1, setModal1] = useState(false);
   const [isCard, setIsCard] = useState(false);
   const [customer, setCustomer] = useState([]);
-  const [isDatableInitialize, setIsDatableInitialize] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [isVip, setIsVip] = useState(null);
   const [amount, setAmount] = useState(null);
   const [barStatus, setbarStatus] = useState("open");
-  const [employees, setEmployees] = useState([]);
   const [remainingCap, setRemainingCap] = useState(null);
   const [totalCap, setTotalCap] = useState(null);
-  const main = useRef(null);
   const getDetail = () => {
-    new Apimanager().Getroute("Admin/bardetail").then((res) => {
-      setTotalCap(res.totalCapacity);
-      setRemainingCap(res.remainigCapacity);
+    new Apimanager().Getroute("v1/admin/bardetail").then((res) => {
+      if (res) {
+        setTotalCap(res.totalCapacity);
+        setRemainingCap(res.remainigCapacity);
+      }
     });
-    new Apimanager().Getroute("Admin/detail/card").then((res) => {
-      setIsCard(!res.success);
-      setIsVip(res.vip);
-      setbarStatus(res.barStatus);
+    new Apimanager().postroute("v1/auth/admin").then((res) => {
+      var { data } = res || {};
+      if (data) {
+        setIsCard(data.amount == 0 ? true : false);
+        setIsVip(data.vip);
+        setbarStatus(data.barStatus);
+      }
     });
   };
   useEffect(() => {
     getDetail();
-    // new Apimanager().Getroute("Admin/bardetail/all").then((res) => {
-    //   console.log(res);
-    //   setCustomers(res);
-    //   try {
-    //     if (!isDatableInitialize) {
-    //       $("#datatables").DataTable({
-    //         pagingType: "full_numbers",
-    //         lengthMenu: [
-    //           [10, 25, 50, -1],
-    //           [10, 25, 50, "All"],
-    //         ],
-    //         language: {
-    //           search: "_INPUT_",
-    //           searchPlaceholder: "Search records",
-    //         },
-    //       });
-    //       setIsDatableInitialize(true);
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // });
-    // return () => {
-    //   try {
-    //     $(".data-table-wrapper").find("table").DataTable().destroy(true);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-    // new Apimanager().Getroute("admin/party/entries").then((res) => {
-    //   console.log(res);
-    //   setEmployees(res);
-    //   try {
-    //     if (!isDatableInitialize) {
-    //       $("#datatables").DataTable({
-    //         pagingType: "full_numbers",
-    //         lengthMenu: [
-    //           [10, 25, 50, -1],
-    //           [10, 25, 50, "All"],
-    //         ],
-    //         language: {
-    //           search: "_INPUT_",
-    //           searchPlaceholder: "Search records",
-    //         },
-    //       });
-    //       setIsDatableInitialize(true);
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // });
-    return () => {
-      try {
-        $(".data-table-wrapper").find("table").DataTable().destroy(true);
-      } catch (error) {
-        console.log(error);
-      }
-    };
   }, []);
-  console.log(customers);
-  // var dataTable = {
-  //   headerRow: [
-  //     "",
-  //     "Date",
-  //     "no of customers",
-  //     "Enter Time",
-  //     "Exit Time",
-  //     "Participants",
-  //   ],
-  //   dataRows: customers.map((item, i) => {
-  //     var cus = null;
-  //     var index = null;
-  //     if (item.customers && item.customers.length > 0) {
-  //       index = item.customers.findIndex(
-  //         (item) => item.customer && item.customer.partyOwner
-  //       );
-  //       if (index)
-  //         cus =
-  //           item.customers &&
-  //           item.customers[index] &&
-  //           item.customers[index].customer &&
-  //           item.customers[index].customer.fullName;
-  //     }
-  //     return [
-  //       item.partyId ? item.partyId : "",
-  //       item.createdAt ? moment(item.enteredBarTime).format("MM/DD/YYYY") : "",
-  //       // cus ? cus : "",
-  //       item.customers && item.customers.length > 0
-  //         ? item.customers.length
-  //         : "",
-  //       item.createdAt ? moment(item.enteredBarTime).format("hh-mm A") : "",
-  //       item.createdAt ? moment(item.exitBarTime).format("hh-mm A") : "",
-  //     ];
-  //   }),
-  // };
   const unSetCard = (i) => {
-    console.log(i);
     if (i) {
-      new Apimanager().postroute("Admin/detail/card", { ...i }).then((res) => {
-        setIsVip(i.vip);
+      new Apimanager().postroute("v1/Admin/detail", { ...i }).then((res) => {
+        getDetail();
       });
     } else {
       new Apimanager()
-        .postroute("Admin/detail/card", { amount: null, payment: false, ...i })
+        .postroute("v1/Admin/detail", { amount: "0" })
         .then((res) => {
-          setIsCard(true);
+          getDetail();
         });
     }
   };
@@ -173,16 +80,14 @@ function Closeit() {
       );
       return;
     }
-    new Apimanager()
-      .postroute("Admin/detail/card", { amount, payment: true })
-      .then((res) => {
-        setIsCard(false);
-        setModal1(false);
-      });
+    new Apimanager().postroute("v1/Admin/detail", { amount }).then((res) => {
+      setModal1(false);
+      getDetail();
+    });
   };
 
   const openBar = () => {
-    new Apimanager().PutrouteByid("admin/closingbar").then((res) => {
+    new Apimanager().PutrouteByid("v1/admin/bar").then((res) => {
       if (res.data)
         setAlert(
           (alert) =>
@@ -201,7 +106,7 @@ function Closeit() {
     });
   };
   const closeBar = () => {
-    new Apimanager().postroute("admin/closingbar").then((res) => {
+    new Apimanager().postroute("v1/admin/bar").then((res) => {
       if (res.data)
         setAlert(
           (alert) =>
@@ -218,28 +123,6 @@ function Closeit() {
         );
       getDetail();
     });
-  };
-
-  var dataTable = {
-    headerRow: [
-      "Date",
-      "Customer Name",
-      "Email",
-      "Phone Number",
-      "Enter Time",
-      "Exit Time",
-    ],
-    dataRows: employees.map((item) => [
-      (item.createdAt && moment(item.createdAt).format("MM/DD/YYYY")) || "",
-      (item.customer && item.customer.fullName && item.customer.fullName) || "",
-      (item.customer && item.customer.email && item.customer.email) || "",
-      (item.customer && item.customer.phone && item.customer.phone) || "",
-      (item.createdAt && moment(item.createdAt).format("hh-mm A")) || "",
-      (item.party &&
-        item.party.exitBarTime &&
-        moment(item.party.exitBarTime).format("hh-mm A")) ||
-        "",
-    ]),
   };
   return (
     <>
@@ -275,11 +158,17 @@ function Closeit() {
         </span>
         <span style={{ marginLeft: "10%" }}>
           {!isVip ? (
-            <Button bsStyle="warning" onClick={() => unSetCard({ vip: true })}>
+            <Button
+              bsStyle="warning"
+              onClick={() => unSetCard({ vip: "true" })}
+            >
               Set entry for VIP
             </Button>
           ) : (
-            <Button bsStyle="warning" onClick={() => unSetCard({ vip: false })}>
+            <Button
+              bsStyle="warning"
+              onClick={() => unSetCard({ vip: "false" })}
+            >
               Set entry for all
             </Button>
           )}
@@ -300,7 +189,6 @@ function Closeit() {
             </Button>
           )}
         </span>
-        {console.log(barStatus)}
         <h4
           style={{
             textAlign: "center",
@@ -308,9 +196,7 @@ function Closeit() {
             backgroundColor: "white",
           }}
         >
-          {barStatus == "barclosed"
-            ? "Bar is currently closed"
-            : "Bar is currently open"}
+          {!barStatus ? "Bar is currently closed" : "Bar is currently open"}
         </h4>
       </div>
 

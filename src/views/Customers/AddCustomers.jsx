@@ -18,8 +18,9 @@ class UserProfile extends Component {
     alert: null,
   };
   updateform = (val) => {
+    var { _id, fullName, email, phone, greek } = this.state;
     new Apimanager()
-      .PutrouteByid("customer/detail/" + this.state._id, { ...this.state })
+      .PutrouteByid("v1/admin/customer", { _id, fullName, email, phone, greek })
       .then((res) => {
         this.setState({
           alert: (
@@ -39,6 +40,7 @@ class UserProfile extends Component {
     //  console.log(JSON.stringify(this.props.location.data)+"thats data i need")
     if (this.props.location.data) {
       const { data } = this.props.location;
+      console.log(data);
       this.setState({
         ...data,
       });
@@ -51,7 +53,7 @@ class UserProfile extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="Add Closeit"
+                title="Update customer"
                 content={
                   <form>
                     <FormInputs

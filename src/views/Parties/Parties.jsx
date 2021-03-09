@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "../../components/CustomButton/CustomButton";
 import { Card } from "components/Card/Card.jsx";
 import Apimanager from "../../NodeFunctions/Functions";
@@ -7,11 +7,6 @@ import { Grid, Row, Col, Modal, Table } from "react-bootstrap";
 import moment from "moment";
 import Axios from "axios";
 import config from "../../config";
-
-import io from "socket.io-client";
-
-var socket = io(`${config.url}`);
-
 function Line() {
   const [alert, setAlert] = useState(null);
   const [modal, setModal] = useState(false);
@@ -19,55 +14,13 @@ function Line() {
   const [tables, setTables] = useState([]);
   const [party, setParty] = useState(null);
   useEffect(() => {
-    var lis = socket.on("admin", () => {
-      console.log("------------------called--------------");
-      getData();
-    });
-    // return () => {
-    //   lis.removeListener();
-    // };
-  }, []);
-  const editrecord = (_id) => {
-    console.log(_id);
-    new Apimanager().PutrouteByid("v1/admin/bumpup", { _id }).then((res) => {
-      if (res && res.data)
-        setAlert(
-          <SweetAlert
-            warning
-            style={{ display: "block", marginTop: "100px" }}
-            title={res.data.message}
-            onConfirm={() => setAlert(null)}
-            onCancel={() => setAlert(null)}
-            confirmBtnBsStyle="warning"
-            showCancel={true}
-          ></SweetAlert>
-        );
-      getData();
-    });
-  };
-  useEffect(() => {
     getData();
   }, []);
-  const getTables = (len, id) => {
-    new Apimanager()
-      .Getroute("v1/admin/tables", { size: len, status: "open" })
-      .then((res) => {
-        setTables(res && res.length > 0 ? res : []);
-        setModal(true);
-        setParty(id);
-      })
-      .catch((e) => console.log(e));
-  };
   const assignTable = (id) => {
-    console.log({
+    Axios.post(`${config.url}v1/admin/assignParty`, {
       tableId: id,
       partyId: party,
-    });
-    new Apimanager()
-      .postroute("v1/admin/assignParty", {
-        tableId: id,
-        partyId: party,
-      })
+    })
       .then((res) => {
         setTables([]);
         setParty(null);
@@ -76,36 +29,20 @@ function Line() {
       })
       .catch((e) => console.log(e));
   };
-  const deleteTable = (_id) => {
-    var user = localStorage.getItem("user");
-    user = JSON.parse(user);
-    Axios.put(
-      `${config.url}v1/admin/party`,
-      { _id },
-      {
-        headers: { Authorization: user && "Bearer " + user.token },
-      }
-    )
-      .then((res) => {
-        getData();
-      })
-      .catch((e) => console.log(e.response.data));
-  };
-  const getData = () => {
-    new Apimanager()
-      .Getroute("v1/Admin/party", { getInLine: true })
-      .then((res) => {
-        if (res && res.length > 0) setCustomers(res);
-        else setCustomers([]);
-      });
-  };
-  const enterParty = (_id) => {
-    new Apimanager().postroute("v1/admin/party", { _id }).then((res) => {
-      console.log(res);
+  const completeParty = (_id) => {
+    new Apimanager().patchroute("v1/admin/party", { _id }).then((res) => {
       getData();
     });
   };
-  const GetTableData = useCallback(() => {
+  const getData = () => {
+    new Apimanager()
+      .Getroute("v1/Admin/party", { status: "enteredBar" })
+      .then((res) => {
+        if (res && res.length > 0) setCustomers(res);
+      });
+  };
+  // console.log(customers);
+  const GetTableData = () => {
     return customers.map((item, key) => {
       var cus = null;
       var index = null;
@@ -118,14 +55,13 @@ function Line() {
             item.customers &&
             item.customers[index] &&
             item.customers[index].customer &&
-            item.customers[index].customer;
+            item.customers[index].customer.fullName;
       }
       var tableNumber = item.table ? item.table.tableNumber : "";
       var id = item._id ? item._id : "";
       return (
         <tr>
-          <td>{cus ? cus.fullName : ""}</td>
-          <td>{cus ? cus.phone : ""}</td>
+          <td>{cus ? cus : ""}</td>
           <td>
             {item.customers && item.customers.length > 0
               ? item.customers.length
@@ -154,63 +90,20 @@ function Line() {
               })}
           </td>
           <td>
-            {item.desireTime ? moment(item.desireTime).format("hh-mm A") : ""}
-          </td>
-          {tableNumber == "" && (
-            <td>
-              <Button
-                style={{ marginRight: 8, width: 115 }}
-                onClick={() => {
-                  var len =
-                    customers &&
-                    customers[key] &&
-                    customers[key].customers &&
-                    customers[key].customers.length;
-                  if (len) getTables(len, id);
-                }}
-                bsStyle="warning"
-              >
-                Assign Table
-              </Button>
-            </td>
-          )}
-          <td>
             <Button
               style={{ marginRight: 8, width: 115 }}
               onClick={() => {
-                deleteTable(id);
+                completeParty(id);
               }}
               bsStyle="danger"
             >
-              Delete
+              Exit
             </Button>
           </td>
-          {item.status == "confirmed" && (
-            <td>
-              <Button
-                style={{ marginRight: 8, width: 115 }}
-                onClick={() => enterParty(id)}
-                bsStyle="danger"
-              >
-                Enter Party
-              </Button>
-            </td>
-          )}
-          {tableNumber == "" && (
-            <td className="text-right">
-              <Button
-                style={{ marginRight: 8, width: 90 }}
-                onClick={() => editrecord(id)}
-                bsStyle="warning"
-              >
-                Bump up
-              </Button>
-            </td>
-          )}
         </tr>
       );
     });
-  }, [customers]);
+  };
 
   return (
     <div style={{ width: "100%", backgroundColor: "#ffffff" }}>
@@ -227,20 +120,18 @@ function Line() {
             <thead>
               <tr>
                 <th>PARTY OWNER</th>
-                <th>OWNER PHONE</th>
                 <th>NO OF CUSTOMERS</th>
                 <th>TIME</th>
                 <th>TABLE NUMBER</th>
                 <th>TABLE LOCATION</th>
                 <th>STATUS</th>
                 <th>PARTICIPANTS</th>
-                <th>DESIRE TIME</th>
               </tr>
             </thead>
-            <tbody>{GetTableData(customers)}</tbody>
+            <tbody>{GetTableData()}</tbody>
           </Table>
         ) : (
-          <h4>No data for line</h4>
+          <h4>No data for Parties</h4>
         )}
         <Row></Row>
       </div>

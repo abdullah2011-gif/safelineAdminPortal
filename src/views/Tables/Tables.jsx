@@ -1,25 +1,12 @@
 import React from "react";
 import Button from "../../components/CustomButton/CustomButton";
 import Apimanager from "../../NodeFunctions/Functions";
-import {
-  Grid,
-  Row,
-  Col,
-  Modal,
-  Image,
-  DropdownButton,
-  MenuItem,
-} from "react-bootstrap";
+import { Grid, Row, Col, Modal, Table } from "react-bootstrap";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { Card } from "components/Card/Card.jsx";
-import $ from "jquery";
 import Axios from "axios";
 import config from "../../config";
-
-require("datatables.net-responsive");
-$.DataTable = require("datatables.net-bs");
-
 class Closeit extends React.Component {
   constructor(props) {
     super(props);
@@ -39,7 +26,7 @@ class Closeit extends React.Component {
   createTable = () => {
     console.log(this.state.location);
     new Apimanager()
-      .postroute("admin/making/tables", {
+      .postroute("v1/admin/tables", {
         tableNumber: this.state.tableNumber,
         size: this.state.size,
         location: this.state.location,
@@ -52,75 +39,36 @@ class Closeit extends React.Component {
       });
   };
   componentDidMount() {
-    new Apimanager().Getroute("admin/making/tables").then((res) => {
+    new Apimanager().Getroute("v1/admin/tables").then((res) => {
       this.setState({
         category_detail: res,
       });
-      // if (!this.state.isdatableinitialize) {
-      //   $("#datatables").DataTable({
-      //     pagingType: "full_numbers",
-      //     lengthMenu: [
-      //       [10, 25, 50, -1],
-      //       [10, 25, 50, "All"],
-      //     ],
-      //     language: {
-      //       search: "_INPUT_",
-      //       searchPlaceholder: "Search records",
-      //     },
-      //   });
-      //   this.setState({ isdatableinitialize: true });
-      // }
     });
   }
-  editrecord = (prop, key, key1) => {
-    // console.log(prop, key, key1);
-    // return;
-    if (key1 == "open") {
-      new Apimanager()
-        .PutrouteByid("admin/opentable/", { barTableId: prop[0] })
-        .then((res) => {
-          console.log(res);
-          if (res.status == 200)
-            this.setState({
-              alert: (
-                <SweetAlert
-                  warning
-                  style={{ display: "block", marginTop: "100px" }}
-                  title={res.data.message}
-                  onConfirm={() => this.setState({ alert: null })}
-                  onCancel={() => this.setState({ alert: null })}
-                  confirmBtnBsStyle="warning"
-                ></SweetAlert>
-              ),
-            });
-          this.componentDidMount();
+  editrecord = (_id) => {
+    new Apimanager().postroute("v1/admin/opentable", { _id }).then((res) => {
+      if (res.status == 200)
+        this.setState({
+          alert: (
+            <SweetAlert
+              warning
+              style={{ display: "block", marginTop: "100px" }}
+              title={res.data.message}
+              onConfirm={() => this.setState({ alert: null })}
+              onCancel={() => this.setState({ alert: null })}
+              confirmBtnBsStyle="warning"
+            ></SweetAlert>
+          ),
         });
-    } else {
-      new Apimanager()
-        .PutrouteByid("admin/making/tables/" + prop[0])
-        .then((res) => {
-          if (res.data)
-            this.setState({
-              alert: (
-                <SweetAlert
-                  warning
-                  style={{ display: "block", marginTop: "100px" }}
-                  title={res.data.message}
-                  onConfirm={() => this.setState({ alert: null })}
-                  onCancel={() => this.setState({ alert: null })}
-                  confirmBtnBsStyle="warning"
-                ></SweetAlert>
-              ),
-            });
-          this.componentDidMount();
-        });
-    }
+      this.componentDidMount();
+    });
   };
   // componentWillUnmount() {
   //   $(".data-table-wrapper").find("table").DataTable().destroy(true);
   // }
-  delete = (id) => {
-    Axios.delete(`${config.url}admin/making/tables/${id}`)
+  delete = (_id) => {
+    new Apimanager()
+      .patchroute(`v1/admin/tables`, { _id })
       .then((res) => {
         if (res.data && res.data.success) {
           this.componentDidMount();
@@ -141,39 +89,81 @@ class Closeit extends React.Component {
       })
       .catch((e) => console.log(e));
   };
-  render() {
-    var dataTable = {
-      headerRow: [
-        "",
-        "Table number",
-        "Minimum size",
-        "Maximum size",
-        "Location",
-        "Status",
-      ],
-      dataRows: this.state.category_detail.map((item) => [
-        item.barTableId,
-        item.tableNumber,
-        item.minSize,
-        item.size,
-        item.location,
+  GetTableData = () => {
+    var { category_detail } = this.state;
+    return category_detail.map((item) => {
+      var status =
         item.status == "open"
           ? "open"
           : item.status == "close"
           ? "Seated"
           : item.status == "disable"
           ? "disable"
-          : "",
-      ]),
-    };
-
+          : "";
+      var id = item._id;
+      return (
+        <tr>
+          <td>{item.tableNumber}</td>
+          <td>{item.minSize}</td>
+          <td>{item.size}</td>
+          <td>{item.location}</td>
+          <td>{status}</td>
+          {status == "open" || status == "disable" ? (
+            <td className="text-right">
+              <Button
+                style={{ marginRight: 8, width: 80 }}
+                onClick={() => this.editrecord(id)}
+                bsStyle="warning"
+              >
+                {status == "open" ? "Disable" : "open"}
+              </Button>
+            </td>
+          ) : (
+            <td className="text-right"></td>
+          )}
+          {status == "open" || status == "disable" ? (
+            <td>
+              <Button
+                style={{ width: 70 }}
+                onClick={() =>
+                  this.setState({
+                    alert: (
+                      <SweetAlert
+                        warning
+                        style={{
+                          display: "block",
+                          marginTop: "100px",
+                        }}
+                        title={"Do you want to delete table!"}
+                        onConfirm={() => this.delete(id)}
+                        onCancel={() => this.setState({ alert: null })}
+                        confirmBtnBsStyle="warning"
+                        confirmBtnText="yes"
+                        cancelBtnText="No"
+                        showCancel={true}
+                      ></SweetAlert>
+                    ),
+                  })
+                }
+                bsStyle="danger"
+              >
+                Delete
+              </Button>
+            </td>
+          ) : null}
+        </tr>
+      );
+    });
+  };
+  render() {
+    var { category_detail } = this.state;
     return (
       <div style={{ width: "100%", backgroundColor: "#FFFFFF" }}>
         <div
           className="fresh-datatables"
           style={{
-            width: "70%",
-            marginLeft: "15%",
+            width: "80%",
+            marginLeft: "10%",
             padding: 15,
             backgroundColor: "#f9f9f9",
           }}
@@ -197,103 +187,24 @@ class Closeit extends React.Component {
             Add table
           </Button>
           <span style={{ marginLeft: "10%" }}></span>
-          <table
-            scrollX={true}
-            id="datatables"
-            ref="main"
-            className="table table-striped table-no-bordered table-hover"
-            cellSpacing="0"
-            align="center"
-            style={{ width: "100%" }}
-          >
-            <thead>
-              <tr>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[0]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[1]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[2]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[3]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[4]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[5]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[6]}
-                </th>
-                <th style={{ fontWeight: "bold", color: "#000000" }}>
-                  {dataTable.headerRow[7]}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataTable.dataRows.map((prop, key) => {
-                return (
-                  <tr key={key}>
-                    {prop.map((prop, key) => {
-                      return <td key={key}>{key == 0 ? "" : prop}</td>;
-                    })}
-                    {prop[5] == "open" ||
-                    prop[5] == "disable" ||
-                    prop[5] == "Seated" ? (
-                      <td className="text-right">
-                        <Button
-                          style={{ marginRight: 8, width: 80 }}
-                          onClick={() =>
-                            prop[5] == "Seated"
-                              ? this.editrecord(prop, key, "open")
-                              : this.editrecord(prop, key)
-                          }
-                          bsStyle="warning"
-                        >
-                          {prop[5] == "close"
-                            ? "open"
-                            : prop[5] == "open"
-                            ? "Disable"
-                            : "open"}
-                        </Button>
-                      </td>
-                    ) : (
-                      <td className="text-right"></td>
-                    )}
-                    <td>
-                      <Button
-                        style={{ width: 70 }}
-                        onClick={() =>
-                          this.setState({
-                            alert: (
-                              <SweetAlert
-                                warning
-                                style={{ display: "block", marginTop: "100px" }}
-                                title={"Do you want to delete table!"}
-                                onConfirm={() => this.delete(prop[0])}
-                                onCancel={() => this.setState({ alert: null })}
-                                confirmBtnBsStyle="warning"
-                                confirmBtnText="yes"
-                                cancelBtnText="No"
-                                showCancel={true}
-                              ></SweetAlert>
-                            ),
-                          })
-                        }
-                        bsStyle="danger"
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          {category_detail && category_detail.length > 0 ? (
+            <Table striped bordered hover size="sm">
+              <thead>
+                <tr>
+                  <th>Table number</th>
+                  <th>Minimum size</th>
+                  <th>Maximum size</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Update Status</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>{this.GetTableData()}</tbody>
+            </Table>
+          ) : (
+            <h4>No data for Tables</h4>
+          )}
         </div>
         {this.state.alert}
         <Modal show={this.state.modal} style={{}}>

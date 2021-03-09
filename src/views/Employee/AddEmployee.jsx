@@ -16,26 +16,26 @@ function UserProfile(props) {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [picturePathway, setPicturePathway] = useState("");
   const [alert, setAlert] = useState(null);
-  const [imgSrc, setImgSrc] = useState("");
+  // const [imgSrc, setImgSrc] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const file = useRef(null);
+  // const [selectedFile, setSelectedFile] = useState(null);
+  // const file = useRef(null);
 
-  const getInitialState = () => {
-    return { file: [] };
-  };
+  // const getInitialState = () => {
+  //   return { file: [] };
+  // };
 
-  const _onChange = (event) => {
-    var f = event.target.files[0];
-    var f = file.current.files[0];
-    var reader = new FileReader();
-    var url = f && reader.readAsDataURL(f);
+  // const _onChange = (event) => {
+  //   var f = event.target.files[0];
+  //   var f = file.current.files[0];
+  //   var reader = new FileReader();
+  //   var url = f && reader.readAsDataURL(f);
 
-    reader.onloadend = function (e) {
-      setImgSrc(f ? [reader.result] : "");
-      setSelectedFile(f);
-    };
-  };
+  //   reader.onloadend = function (e) {
+  //     setImgSrc(f ? [reader.result] : "");
+  //     setSelectedFile(f);
+  //   };
+  // };
   const updateform = (val) => {
     var warning = "";
     if (fullName == "") {
@@ -58,60 +58,61 @@ function UserProfile(props) {
       );
       return;
     }
-    var Formdata = new FormData();
-    Formdata.append("image", selectedFile);
-    if (selectedFile) {
-      new Apimanager()
-        .postrouteFormdata(`employee/image/${employeeId}`, Formdata)
-        .then((res) => {
-          if (res.status === 200) {
-            new Apimanager()
-              .PutrouteByid(`employee/detail/${employeeId}`, {
-                fullName,
-                email,
-                dateOfBirth,
-              })
-              .then((res) => {
-                if (res.status == 200) {
-                  setAlert(
-                    <SweetAlert
-                      success
-                      style={{ display: "block", marginTop: "100px" }}
-                      title="Data Updated!"
-                      onConfirm={() => setAlert(null)}
-                      onCancel={() => setAlert(null)}
-                      confirmBtnBsStyle="info"
-                    ></SweetAlert>
-                  );
-                }
-              })
-              .catch((e) => console.log(e));
-          }
-        })
-        .catch((e) => console.log(e));
-    } else {
-      new Apimanager()
-        .PutrouteByid(`employee/detail/${employeeId}`, {
-          fullName,
-          email,
-          dateOfBirth,
-        })
-        .then((res) => {
-          if (res.status == 200) {
-            setAlert(
-              <SweetAlert
-                success
-                style={{ display: "block", marginTop: "100px" }}
-                title="Data Updated!"
-                onConfirm={() => setAlert(null)}
-                onCancel={() => setAlert(null)}
-                confirmBtnBsStyle="info"
-              ></SweetAlert>
-            );
-          }
-        })
-        .catch((e) => console.log(e));
-    }
+    // var Formdata = new FormData();
+    // Formdata.append("image", selectedFile);
+    // if (selectedFile) {
+    //   new Apimanager()
+    //     .postrouteFormdata(`employee/image/${employeeId}`, Formdata)
+    //     .then((res) => {
+    //       if (res.status === 200) {
+    //         new Apimanager()
+    //           .PutrouteByid(`employee/detail/${employeeId}`, {
+    //             fullName,
+    //             email,
+    //             dateOfBirth,
+    //           })
+    //           .then((res) => {
+    //             if (res.status == 200) {
+    //               setAlert(
+    //                 <SweetAlert
+    //                   success
+    //                   style={{ display: "block", marginTop: "100px" }}
+    //                   title="Data Updated!"
+    //                   onConfirm={() => setAlert(null)}
+    //                   onCancel={() => setAlert(null)}
+    //                   confirmBtnBsStyle="info"
+    //                 ></SweetAlert>
+    //               );
+    //             }
+    //           })
+    //           .catch((e) => console.log(e));
+    //       }
+    //     })
+    //     .catch((e) => console.log(e));
+    // } else
+    // {
+    new Apimanager()
+      .PutrouteByid(`v1/employee/detail`, {
+        fullName,
+        dateOfBirth,
+        _id: employeeId,
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          setAlert(
+            <SweetAlert
+              success
+              style={{ display: "block", marginTop: "100px" }}
+              title="Data Updated!"
+              onConfirm={() => setAlert(null)}
+              onCancel={() => setAlert(null)}
+              confirmBtnBsStyle="info"
+            ></SweetAlert>
+          );
+        }
+      })
+      .catch((e) => console.log(e));
+    // }
   };
   const submitform = () => {
     var id = -1;
@@ -138,24 +139,24 @@ function UserProfile(props) {
       );
       return;
     }
-    if (!selectedFile || selectedFile == null) {
-      setAlert(
-        <SweetAlert
-          warning
-          style={{ display: "block", marginTop: "100px" }}
-          title="Please Select An Image !"
-          onConfirm={() => setAlert(null)}
-          onCancel={() => setAlert(null)}
-          confirmBtnBsStyle="warning"
-        ></SweetAlert>
-      );
-      return;
-    }
-    var Formdata = new FormData();
-    Formdata.append("image", selectedFile);
+    // if (!selectedFile || selectedFile == null) {
+    //   setAlert(
+    //     <SweetAlert
+    //       warning
+    //       style={{ display: "block", marginTop: "100px" }}
+    //       title="Please Select An Image !"
+    //       onConfirm={() => setAlert(null)}
+    //       onCancel={() => setAlert(null)}
+    //       confirmBtnBsStyle="warning"
+    //     ></SweetAlert>
+    //   );
+    //   return;
+    // }
+    // var Formdata = new FormData();
+    // Formdata.append("image", selectedFile);
 
     new Apimanager()
-      .postroute("signup", {
+      .postroute("v1/auth/employeeSignup", {
         fullName,
         email,
         dateOfBirth,
@@ -165,6 +166,7 @@ function UserProfile(props) {
 
       .then((res) => {
         if (res.status == 200) {
+          console.log(res.data);
           console.log(res.data.user);
           Alert("");
           id = res.data.user.employeeId;
@@ -173,6 +175,16 @@ function UserProfile(props) {
           setDateOfBirth(res.data.user.dateOfBirth);
           setEmployeeId(res.data.user.employeeId);
           setPicturePathway(res.data.user.picturePathway);
+          setAlert(
+            <SweetAlert
+              success
+              style={{ display: "block", marginTop: "100px" }}
+              title="Account Created!"
+              onConfirm={() => setAlert(null)}
+              onCancel={() => setAlert(null)}
+              confirmBtnBsStyle="info"
+            ></SweetAlert>
+          );
         } else {
           setAlert(
             <SweetAlert
@@ -187,39 +199,39 @@ function UserProfile(props) {
           return;
         }
       })
-      .then(() => {
-        if (id != -1) {
-          new Apimanager()
-            .postrouteFormdata(`employee/image/${id}`, Formdata)
-            .then((res) => {
-              if (res.status == 200) {
-                setPicturePathway(res.data.picturePathway);
-                setAlert(
-                  <SweetAlert
-                    success
-                    style={{ display: "block", marginTop: "100px" }}
-                    title="Account Created!"
-                    onConfirm={() => setAlert(null)}
-                    onCancel={() => setAlert(null)}
-                    confirmBtnBsStyle="info"
-                  ></SweetAlert>
-                );
-              } else {
-                setAlert(
-                  <SweetAlert
-                    warning
-                    style={{ display: "block", marginTop: "100px" }}
-                    title="Account Created But Error In Image Uploading !"
-                    onConfirm={() => setAlert(null)}
-                    onCancel={() => setAlert(null)}
-                    confirmBtnBsStyle="warning"
-                  ></SweetAlert>
-                );
-              }
-            })
-            .catch((e) => console.log(e));
-        }
-      })
+      // .then(() => {
+      //   if (id != -1) {
+      //     new Apimanager()
+      //       .postrouteFormdata(`employee/image/${id}`, Formdata)
+      //       .then((res) => {
+      //         if (res.status == 200) {
+      //           setPicturePathway(res.data.picturePathway);
+      //           setAlert(
+      //             <SweetAlert
+      //               success
+      //               style={{ display: "block", marginTop: "100px" }}
+      //               title="Account Created!"
+      //               onConfirm={() => setAlert(null)}
+      //               onCancel={() => setAlert(null)}
+      //               confirmBtnBsStyle="info"
+      //             ></SweetAlert>
+      //           );
+      //         } else {
+      //           setAlert(
+      //             <SweetAlert
+      //               warning
+      //               style={{ display: "block", marginTop: "100px" }}
+      //               title="Account Created But Error In Image Uploading !"
+      //               onConfirm={() => setAlert(null)}
+      //               onCancel={() => setAlert(null)}
+      //               confirmBtnBsStyle="warning"
+      //             ></SweetAlert>
+      //           );
+      //         }
+      //       })
+      //       .catch((e) => console.log(e));
+      //   }
+      // })
       .catch((e) => console.log(e));
   };
   useEffect(() => {
@@ -228,7 +240,7 @@ function UserProfile(props) {
       setFullName(data.fullName);
       setEmail(data.email);
       setDateOfBirth(data.dateOfBirth);
-      setEmployeeId(data.employeeId);
+      setEmployeeId(data._id);
       setPicturePathway(data.picturePathway);
     }
   }, []);
@@ -241,7 +253,7 @@ function UserProfile(props) {
               title="Add Account"
               content={
                 <form>
-                  <Row>
+                  {/* <Row>
                     <Col md={5}></Col>
                     <Col xs={6} md={4}>
                       <Image
@@ -261,7 +273,7 @@ function UserProfile(props) {
                         }}
                       />
                     </Col>
-                  </Row>
+                  </Row> */}
                   <FormInputs
                     ncols={["col-md-6", "col-md-6"]}
                     properties={[
@@ -300,6 +312,7 @@ function UserProfile(props) {
                         placeholder: "Email",
                         defaultValue:
                           props.match.params.data == ":data" ? "" : email,
+                        disabled: !employeeId ? false : true,
                         onChange: (evt) => {
                           setEmail(evt.target.value);
                         },
@@ -333,13 +346,13 @@ function UserProfile(props) {
                     ]}
                   />
                   <Row>
-                    <input
+                    {/* <input
                       ref={file}
                       type="file"
                       name="user[image]"
                       multiple="true"
                       onChange={_onChange}
-                    />
+                    /> */}
                     <Col md={12}>
                       {!employeeId ? (
                         <Button

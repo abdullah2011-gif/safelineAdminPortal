@@ -2,98 +2,56 @@ import React, { useState, useEffect, useRef } from "react";
 import Button from "../../components/CustomButton/CustomButton";
 import Apimanager from "../../NodeFunctions/Functions";
 import SweetAlert from "react-bootstrap-sweetalert";
-import { Row, Col } from "react-bootstrap";
+import { Table, Dropdown, DropdownButton, MenuItem } from "react-bootstrap";
+
 import moment from "moment";
-import $ from "jquery";
-require("datatables.net-responsive");
-$.DataTable = require("datatables.net-bs");
+import PaginationComponent from "react-reactstrap-pagination";
 
 function Closeit(props) {
   const [alert, setAlert] = useState(null);
-  const [isDatableInitialize, setIsDatableInitialize] = useState(false);
   const [customers, setCustomers] = useState([]);
-  const main = useRef(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const calculateAge = (age) => {
-    var a = moment();
-    var b = moment(age, "DD/MM/YYYY");
-    var diff = a.diff(b, "years");
+    var b = moment(age, "DD/MM/YYYY").toDate();
+    if (b == "Invalid Date") b = moment(age).toDate();
+    var diff = moment().diff(b, "years");
     return diff;
   };
-  const editrecord = (prop) => {
+  const editrecord = (_id, vipStatus) => {
     new Apimanager()
-      .PutrouteByid("admin/vipcustomer/" + prop[0])
+      .PutrouteByid("v1/admin/customer", { _id, vipStatus })
       .then((res) => {
+        getData();
         if (res.data)
           setAlert(
             <SweetAlert
               success
               style={{ display: "block", marginTop: "100px" }}
-              title={res.data.message}
+              title={"successfully update status"}
               onConfirm={() => setAlert(null)}
               onCancel={() => setAlert(null)}
               confirmBtnBsStyle="warning"
               showCancel={true}
             ></SweetAlert>
           );
-        new Apimanager().Getroute("customer/detail").then((res) => {
-          setCustomers(res);
-        });
+        getData();
+      });
+  };
+  const getData = () => {
+    new Apimanager()
+      .Getroute("v1/admin/customer", { skip: (page - 1) * 10, limit: 10 })
+      .then((res) => {
+        if (res) {
+          console.log(res);
+          setCustomers(res.customers);
+          setTotal(res.count);
+        }
       });
   };
   useEffect(() => {
-    new Apimanager().Getroute("customer/detail/limit").then((res) => {
-      setCustomers(res);
-    });
-    new Apimanager().Getroute("customer/detail").then((res) => {
-      // res.shift();
-      setCustomers(res);
-      try {
-        if (!isDatableInitialize) {
-          $("#tab").DataTable({
-            pagingType: "full_numbers",
-            lengthMenu: [
-              [10, 25, 50, -1],
-              [10, 25, 50, "All"],
-            ],
-            language: {
-              search: "_INPUT_",
-              searchPlaceholder: "Search records",
-            },
-          });
-          setIsDatableInitialize(true);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    });
-    return () => {
-      try {
-        $(".data-table-wrapper").find("table").DataTable().destroy(true);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  }, []);
-  var dataTable = {
-    headerRow: [
-      "Customer Id",
-      "Full Name",
-      "Email",
-      "age",
-      "Vip status",
-      "Phone",
-      "Greek Organization",
-    ],
-    dataRows: customers.map((item, i) => [
-      item.customerId,
-      item.fullName,
-      item.email,
-      calculateAge(item.dateOfBirth),
-      item.vip ? "true" : "false",
-      item.phone,
-      item.greek,
-    ]),
-  };
+    getData();
+  }, [page]);
   const edit = (prop, key) => {
     props.history.push({
       pathname: `/admin/addcustomer`,
@@ -105,10 +63,8 @@ function Closeit(props) {
     await new Apimanager().deleterouteByid(
       "customer/detail/" + customers[i]._id
     );
-    new Apimanager().Getroute("customer/detail").then((res) => {
-      setAlert(null);
-      setCustomers(res);
-    });
+    setAlert(null);
+    getData();
   };
 
   const modalVisible = (id) => {
@@ -125,6 +81,69 @@ function Closeit(props) {
       ></SweetAlert>
     );
   };
+
+  const GetTableData = () => {
+    return customers.map((item, key) => {
+      return (
+        <tr>
+          <td>{item.fullName}</td>
+          <td>{item.email}</td>
+          <td>{calculateAge(item.dateOfBirth)}</td>
+          <td>{item.phone}</td>
+          <td>{item.greek ? item.greek : "not selected"}</td>
+          <td>
+            {/* <Button
+              style={{ marginRight: 8, width: 90 }}
+              onClick={() => editrecord(item._id)}
+              bsStyle="warning"
+            > */}
+            <DropdownButton title={item.vipStatus ? item.vipStatus : "regular"}>
+              <MenuItem
+                onClick={(evt) => editrecord(item._id, "regular")}
+                value="regular"
+                href="#books"
+              >
+                regular
+              </MenuItem>
+              <MenuItem
+                onClick={(evt) => editrecord(item._id, "vip")}
+                value="vip"
+                href="#podcasts"
+              >
+                vip
+              </MenuItem>
+              <MenuItem
+                onClick={(evt) => editrecord(item._id, "Promoter")}
+                value="Promoter"
+                href="#"
+              >
+                Promoter
+              </MenuItem>
+            </DropdownButton>
+            {/* </Button> */}
+          </td>
+          <td>
+            <Button
+              style={{ marginRight: 8, width: 90 }}
+              onClick={() => edit(item, key)}
+              bsStyle="warning"
+            >
+              {"Edit"}
+            </Button>
+          </td>
+          <td>
+            <Button
+              style={{ marginRight: 8, width: 90 }}
+              onClick={() => modalVisible(item._id)}
+              bsStyle="warning"
+            >
+              {"Delete"}
+            </Button>
+          </td>
+        </tr>
+      );
+    });
+  };
   return (
     <div style={{ width: "100%", backgroundColor: "#ffffff" }}>
       <div
@@ -136,89 +155,32 @@ function Closeit(props) {
           padding: 15,
         }}
       >
-        <table
-          scrollX={true}
-          id="tab"
-          ref={main}
-          onScroll={true}
-          className="table table-striped table-no-bordered table-hover"
-          cellSpacing="0"
-          align="center"
-          style={{ width: "100%" }}
-        >
-          <thead>
-            <tr>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[0]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[1]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[2]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[3]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[4]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[5]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[6]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[7]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[8]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[9]}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable.dataRows.map((prop, key) => {
-              return (
-                <tr key={key}>
-                  {prop.map((prop, key) => {
-                    return <td key={key}>{prop}</td>;
-                  })}
-                  <td>
-                    <Button
-                      style={{ marginRight: 8, width: 90 }}
-                      onClick={() => editrecord(prop, key)}
-                      bsStyle="warning"
-                    >
-                      {prop[4] == "false" ? "make vip" : "revert"}
-                    </Button>
-                  </td>
-                  <td>
-                    <Button
-                      style={{ marginRight: 8, width: 90 }}
-                      onClick={() => edit(prop, key)}
-                      bsStyle="warning"
-                    >
-                      {"Edit"}
-                    </Button>
-                  </td>
-                  <td>
-                    <Button
-                      style={{ marginRight: 8, width: 90 }}
-                      onClick={() => modalVisible(prop[0])}
-                      bsStyle="warning"
-                    >
-                      {"Delete"}
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {customers && customers.length > 0 ? (
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>age</th>
+                <th>Phone</th>
+                <th>Greek Organization</th>
+                <th>set type</th>
+                <th>Edit</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>{GetTableData()}</tbody>
+          </Table>
+        ) : (
+          <h4>No data for Customers</h4>
+        )}
+        {customers && customers.length > 0 ? (
+          <PaginationComponent
+            totalItems={total}
+            pageSize={10}
+            onSelect={setPage}
+          />
+        ) : null}
       </div>
       {alert}
     </div>

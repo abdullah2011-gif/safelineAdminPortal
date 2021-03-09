@@ -2,52 +2,24 @@ import React, { useState, useEffect, useRef } from "react";
 import Button from "../../components/CustomButton/CustomButton";
 import Apimanager from "../../NodeFunctions/Functions";
 import SweetAlert from "react-bootstrap-sweetalert";
-import $ from "jquery";
-
-require("datatables.net-responsive");
-$.DataTable = require("datatables.net-bs");
+import { Table } from "react-bootstrap";
 
 function Closeit(props) {
   const [alert, setAlert] = useState(null);
   const [employees, setEmployees] = useState([]);
-  const [isDatableInitialize, setIsDatableInitialize] = useState(false);
-  const main = useRef(null);
   useEffect(() => {
-    new Apimanager().Getroute("employee/detail").then((res) => {
-      res.shift();
+    getData();
+  }, []);
+  const getData = () => {
+    new Apimanager().Getroute("v1/employee/detail").then((res) => {
       console.log(res);
       setEmployees(res);
-      try {
-        if (!isDatableInitialize) {
-          $("#tabl").DataTable({
-            pagingType: "full_numbers",
-            lengthMenu: [
-              [10, 25, 50, -1],
-              [10, 25, 50, "All"],
-            ],
-            language: {
-              search: "_INPUT_",
-              searchPlaceholder: "Search records",
-            },
-          });
-          setIsDatableInitialize(true);
-        }
-      } catch (error) {
-        console.log(error);
-      }
     });
-    return () => {
-      try {
-        $(".data-table-wrapper").find("table").DataTable().destroy(true);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  }, []);
+  };
   const editrecord = (item, key) => {
     props.history.push({
       pathname: `/admin/addemployee`,
-      data: employees[key], // your data array of objects
+      data: item, // your data array of objects
     });
   };
   const modalVisible = (id) => {
@@ -64,42 +36,55 @@ function Closeit(props) {
       ></SweetAlert>
     );
   };
-  const deleterecord = (id) => {
+  const deleterecord = (_id) => {
     new Apimanager()
-      .deleterouteByid(`employee/detail/${id}`)
+      .patchroute(`v1/employee/detail`, { _id })
       .then((res) => {
         if (res.status === 200) {
           setAlert(
             <SweetAlert
               success
               style={{ display: "block", marginTop: "100px" }}
-              title={`Successfully Delete Record Of ID ${id} !`}
+              title={`Successfully Delete Record Of ID ${_id} !`}
               onConfirm={() => setAlert(null)}
-              onCancel={() => deleterecord(id)}
+              onCancel={() => setAlert(null)}
               confirmBtnBsStyle="Warning"
             ></SweetAlert>
           );
         }
       })
-      .then(() =>
-        new Apimanager()
-          .Getroute("employee/detail")
-          .then((res) => {
-            res.shift();
-            setEmployees(res);
-          })
-          .catch((e) => console.log(e))
-      );
-  };
-  var dataTable = {
-    headerRow: ["Employee Id", "Employee Name", "Email"],
-    dataRows: employees.map((item) => [
-      item.employeeId,
-      item.fullName,
-      item.email,
-    ]),
+      .then(() => getData());
   };
 
+  const GetTableData = () => {
+    return employees.map((item, key) => {
+      return (
+        <tr>
+          <td>{item.employeeId}</td>
+          <td>{item.fullName}</td>
+          <td>{item.email}</td>
+          <td className="text-right">
+            <Button
+              style={{ marginRight: 8, width: 70 }}
+              onClick={() => editrecord(item)}
+              bsStyle="warning"
+            >
+              Edit
+            </Button>
+          </td>
+          <td>
+            <Button
+              style={{ width: 70 }}
+              onClick={() => modalVisible(item._id)}
+              bsStyle="danger"
+            >
+              Delete
+            </Button>
+          </td>
+        </tr>
+      );
+    });
+  };
   return (
     <div style={{ width: "100%", backgroundColor: "#ffffff" }}>
       <div
@@ -111,65 +96,22 @@ function Closeit(props) {
           padding: 15,
         }}
       >
-        <table
-          scrollX={true}
-          id="tabl"
-          ref={main}
-          onScroll={true}
-          className="table table-striped table-no-bordered table-hover"
-          cellSpacing="0"
-          align="center"
-          style={{ width: "100%" }}
-        >
-          <thead>
-            <tr>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[0]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[1]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[2]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[3]}
-              </th>
-              <th style={{ fontWeight: "bold", color: "#000000" }}>
-                {dataTable.headerRow[4]}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable.dataRows.map((prop, key) => {
-              return (
-                <tr key={key}>
-                  {prop.map((prop, key) => {
-                    return <td key={key}>{prop}</td>;
-                  })}
-                  <td className="text-right">
-                    <Button
-                      style={{ marginRight: 8, width: 70 }}
-                      onClick={() => editrecord(prop, key)}
-                      bsStyle="warning"
-                    >
-                      Edit
-                    </Button>
-                  </td>
-                  <td>
-                    <Button
-                      style={{ width: 70 }}
-                      onClick={() => modalVisible(prop[0])}
-                      bsStyle="danger"
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {employees && employees.length > 0 ? (
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Employee Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Edit</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>{GetTableData()}</tbody>
+          </Table>
+        ) : (
+          <h4>No data for Employee</h4>
+        )}
       </div>
       {alert}
     </div>
