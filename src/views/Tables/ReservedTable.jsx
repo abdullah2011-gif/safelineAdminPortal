@@ -181,6 +181,7 @@ class Closeit extends React.Component {
         >
           <input
             type="date"
+            min={moment().format("YYYY-MM-DD")}
             onChange={(evt) => this.getData(evt.target.value)}
           />
           <Button
@@ -312,12 +313,31 @@ class Closeit extends React.Component {
                                 label: "Amount to Duplicate",
                                 control: true,
                                 defaultValue: this.state.size,
-                                child: ["", "", "", "", "", "", "", ""].map(
-                                  (item, inde) => ({
-                                    title: inde + 1,
-                                    value: inde + 1,
-                                  })
-                                ),
+                                child: [
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                ].map((item, inde) => ({
+                                  title: inde + 1,
+                                  value: inde + 1,
+                                })),
                                 placeholder: "Location",
                                 variant: "outline-secondary",
                                 title: "Location",

@@ -133,6 +133,7 @@ class Closeit extends React.Component {
         >
           <input
             type="date"
+            min={moment().format("YYYY-MM-DD")}
             onChange={(evt) => this.getData(evt.target.value)}
           />
           <span style={{ marginLeft: "10%" }}></span>

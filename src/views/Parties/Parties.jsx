@@ -39,6 +39,7 @@ function Line() {
       .Getroute("v1/Admin/party", { status: "enteredBar" })
       .then((res) => {
         if (res && res.length > 0) setCustomers(res);
+        else setCustomers([]);
       });
   };
   // console.log(customers);
