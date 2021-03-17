@@ -45,7 +45,7 @@ class Closeit extends React.Component {
     if (date) this.setState({ date });
     new Apimanager()
       .Getroute("v1/admin/reserved-table", {
-        date: date ? date : moment(this.state.date).format("YYYY-MM-DD"),
+        date: moment(date ? date : this.state.date).toDate(),
         day7: this.state.day7,
       })
       .then((res) => {
@@ -361,7 +361,6 @@ class Closeit extends React.Component {
                                 placeholder: "Date",
                                 defaultValue: this.state.size,
                                 onChange: (evt) => {
-                                  console.log(new Date(evt.target.value));
                                   this.setState({
                                     date: new Date(evt.target.value),
                                   });
@@ -376,7 +375,10 @@ class Closeit extends React.Component {
                                 defaultValue: this.state.size,
                                 onChange: (evt) => {
                                   this.setState({
-                                    startTime: evt.target.value,
+                                    startTime: moment(
+                                      evt.target.value,
+                                      "HH-mm"
+                                    ).toDate(),
                                   });
                                 },
                               },
@@ -389,7 +391,10 @@ class Closeit extends React.Component {
                                 defaultValue: this.state.size,
                                 onChange: (evt) => {
                                   this.setState({
-                                    endTime: evt.target.value,
+                                    endTime: moment(
+                                      evt.target.value,
+                                      "HH-mm"
+                                    ).toDate(),
                                   });
                                 },
                               },

@@ -25,7 +25,7 @@ class Closeit extends React.Component {
     if (date) this.setState({ date });
     new Apimanager()
       .Getroute("v1/admin/reserved-parties", {
-        date: date ? date : moment(this.state.date).format("YYYY-MM-DD"),
+        date: date ? date : moment(this.state.date).toDate(),
         day7: this.state.day7,
       })
       .then((res) => {
