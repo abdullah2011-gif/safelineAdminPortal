@@ -182,7 +182,7 @@ class Closeit extends React.Component {
           <input
             type="date"
             min={moment().format("YYYY-MM-DD")}
-            onChange={(evt) => this.getData(evt.target.value)}
+            onChange={(evt) => this.getData(new Date(evt.target.value))}
           />
           <Button
             round={true}
