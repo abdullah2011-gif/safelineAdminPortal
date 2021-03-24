@@ -29,6 +29,7 @@ class Closeit extends React.Component {
         date: date ? date : moment(this.state.date).toDate(),
         day7: this.state.day7,
         showAll: Show ? Show : this.state.showAll,
+        noDate: Show ? Show : this.state.showAll,
       })
       .then((res) => {
         console.log(res);
@@ -135,7 +136,6 @@ class Closeit extends React.Component {
         >
           <input
             type="date"
-            min={moment().format("YYYY-MM-DD")}
             onChange={(evt) => this.getData(evt.target.value)}
           />
           <Button
@@ -153,7 +153,7 @@ class Closeit extends React.Component {
           <span style={{ marginLeft: "10%" }}></span>
           {category_detail && category_detail.length > 0 ? (
             category_detail.map((item) => {
-              if (item._id == "reserved" || item._id == "enteredBar")
+              if (item._id != "reserved" || item._id != "enteredBar")
                 return (
                   <>
                     <h4>{item._id == "reserved" ? "Queue" : item._id}</h4>

@@ -24,6 +24,7 @@ class Closeit extends React.Component {
       remainingCap: null,
       date: new Date(),
       day7: true,
+      showAll: false,
     };
   }
   createTable = () => {
@@ -41,12 +42,13 @@ class Closeit extends React.Component {
   componentDidMount() {
     this.getData();
   }
-  getData = (date) => {
+  getData = (date, show) => {
     if (date) this.setState({ date });
     new Apimanager()
       .Getroute("v1/admin/reserved-table", {
         date: moment(date ? date : this.state.date).toDate(),
         day7: this.state.day7,
+        showAll: show ? show : this.state.showAll,
       })
       .then((res) => {
         console.log(res);
@@ -117,6 +119,12 @@ class Closeit extends React.Component {
           <td>{item.amount}</td>
           <td>{item.location}</td>
           <td>{status == "reserved" ? "free" : status}</td>
+          <td>
+            {" "}
+            {moment(item.startTime).format("hh-mm A") +
+              " - " +
+              moment(item.endTime).format("hh-mm A")}
+          </td>
           {/* {status == "booked" || status == "enteredBar" ? (
             <td className="text-right">
               <Button
@@ -168,269 +176,286 @@ class Closeit extends React.Component {
   };
   render() {
     var { category_detail } = this.state;
+
     return (
-      <div style={{ width: "100%", backgroundColor: "#FFFFFF" }}>
-        <div
-          className="fresh-datatables"
-          style={{
-            width: "80%",
-            marginLeft: "10%",
-            padding: 15,
-            backgroundColor: "#f9f9f9",
-          }}
-        >
-          <input
-            type="date"
-            min={moment().format("YYYY-MM-DD")}
-            onChange={(evt) => this.getData(new Date(evt.target.value))}
-          />
-          <Button
-            round={true}
-            pullRight
-            onClick={() => this.setState({ modal: true })}
-            style={{ marginBottom: 10 }}
+      <>
+        <div style={{ width: "100%", backgroundColor: "#FFFFFF" }}>
+          <div
+            className="fresh-datatables"
+            style={{
+              width: "80%",
+              marginLeft: "10%",
+              padding: 15,
+              backgroundColor: "#f9f9f9",
+            }}
           >
-            Add table
-          </Button>
-          <span style={{ marginLeft: "10%" }}></span>
-          {category_detail && category_detail.length > 0 ? (
-            <Table striped bordered hover size="sm">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Table number</th>
-                  <th>size</th>
-                  <th>Amount</th>
-                  <th>Location</th>
-                  <th>Status</th>
-                  <th>Status</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>{this.GetTableData()}</tbody>
-            </Table>
-          ) : (
-            <h4>No data for Tables</h4>
-          )}
-        </div>
-        {this.state.alert}
-        <Modal show={this.state.modal} style={{}}>
-          <div className="content">
-            <Grid fluid>
-              <Row>
-                <Col md={12}>
-                  <Card
-                    title="Add Table"
-                    content={
-                      <form>
-                        <Row>
-                          <FormInputs
-                            ncols={["col-md-6", "col-md-6"]}
-                            properties={[
-                              {
-                                label: "Table number",
-                                type: "number",
-                                bsClass: "form-control",
-                                placeholder: "Table number",
-                                defaultValue: this.state.tableNumber,
-                                onChange: (evt) => {
-                                  this.setState({
-                                    tableNumber: evt.target.value,
-                                  });
-                                },
-                              },
-                              {
-                                label: "Table Price",
-                                type: "number",
-                                defaultValue: this.state.minSize,
-                                bsClass: "form-control",
-                                placeholder: "Table amount",
-                                onChange: (evt) => {
-                                  this.setState({
-                                    amount: evt.target.value,
-                                  });
-                                },
-                              },
-                            ]}
-                          />
-                          <FormInputs
-                            ncols={["col-md-6", "col-md-6"]}
-                            properties={[
-                              {
-                                label: "Table Capacity",
-                                type: "number",
-                                bsClass: "form-control",
-                                placeholder: "Table size",
-                                defaultValue: this.state.size,
-                                onChange: (evt) => {
-                                  this.setState({
-                                    size: evt.target.value,
-                                  });
-                                },
-                              },
-                              {
-                                label: "Location",
-                                control: true,
-                                defaultValue: this.state.size,
-                                child: [
-                                  { title: "Inside", value: "Inside" },
-                                  { title: "Deck", value: "Deck" },
-                                  { title: "Club Rush", value: "Club Rush" },
-                                  {
-                                    title: "Parking Lot",
-                                    value: "Parking Lot",
-                                  },
-                                ],
-                                placeholder: "Location",
-                                variant: "outline-secondary",
-                                title: "Location",
-                                id: "input-group-dropdown-2",
-                                onChange: (evt) => {
-                                  this.setState({
-                                    location: evt.target.value,
-                                  });
-                                },
-                              },
-                            ]}
-                          />
-                          <FormInputs
-                            ncols={["col-md-6", "col-md-6"]}
-                            properties={[
-                              {
-                                label: "Description",
-                                type: "textarea",
-                                componentClass: "textarea",
-                                bsClass: "form-control",
-                                placeholder: "Description",
-                                defaultValue: this.state.size,
-                                onChange: (evt) => {
-                                  this.setState({
-                                    description: evt.target.value,
-                                  });
-                                },
-                              },
-                              {
-                                label: "Amount to Duplicate",
-                                control: true,
-                                defaultValue: this.state.size,
-                                child: [
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                  "",
-                                ].map((item, inde) => ({
-                                  title: inde + 1,
-                                  value: inde + 1,
-                                })),
-                                placeholder: "Location",
-                                variant: "outline-secondary",
-                                title: "Location",
-                                id: "input-group-dropdown-2",
-                                onChange: (evt) => {
-                                  this.setState({
-                                    number: evt.target.value,
-                                  });
-                                },
-                              },
-                            ]}
-                          />
-                          <FormInputs
-                            ncols={["col-md-4", "col-md-4", "col-md-4"]}
-                            properties={[
-                              {
-                                label: "Date",
-                                type: "date",
-                                // componentClass: "date",
-                                bsClass: "form-control",
-                                placeholder: "Date",
-                                defaultValue: this.state.size,
-                                onChange: (evt) => {
-                                  this.setState({
-                                    date: new Date(evt.target.value),
-                                  });
-                                },
-                              },
-                              {
-                                label: "Start Time",
-                                type: "time",
-                                // componentClass: "date",
-                                bsClass: "form-control",
-                                placeholder: "Start Time",
-                                defaultValue: this.state.size,
-                                onChange: (evt) => {
-                                  this.setState({
-                                    startTime: moment(
-                                      evt.target.value,
-                                      "HH-mm"
-                                    ).toDate(),
-                                  });
-                                },
-                              },
-                              {
-                                label: "End Time",
-                                type: "time",
-                                // componentClass: "date",
-                                bsClass: "form-control",
-                                placeholder: "End Time",
-                                defaultValue: this.state.size,
-                                onChange: (evt) => {
-                                  this.setState({
-                                    endTime: moment(
-                                      evt.target.value,
-                                      "HH-mm"
-                                    ).toDate(),
-                                  });
-                                },
-                              },
-                            ]}
-                          />
-                          <Col></Col>
-                          <Button
-                            style={{ marginLeft: "35%" }}
-                            bsStyle="warning"
-                            onClick={() =>
-                              this.setState({
-                                size: null,
-                                modal: false,
-                                tableNumber: null,
-                              })
-                            }
-                          >
-                            Close
-                          </Button>
-                          <Button
-                            style={{ marginLeft: "5%" }}
-                            bsStyle="warning"
-                            onClick={this.createTable}
-                          >
-                            add table
-                          </Button>
-                        </Row>
-                      </form>
-                    }
-                  />
-                </Col>
-              </Row>
-            </Grid>
+            <input
+              type="date"
+              min={moment().format("YYYY-MM-DD")}
+              onChange={(evt) => this.getData(new Date(evt.target.value))}
+            />
+            <Button
+              round={true}
+              pullRight
+              onClick={() => this.setState({ modal: true })}
+              style={{ marginBottom: 10 }}
+            >
+              Add table
+            </Button>
+
+            <div style={{ marginTop: "2%" }}>
+              <Button
+                round={true}
+                bsStyle={this.state.showAll && "warning"}
+                onClick={() => {
+                  this.setState({ showAll: !this.state.showAll });
+                  this.getData(null, String(!this.state.showAll));
+                }}
+                style={{ marginBottom: 10 }}
+              >
+                show all
+              </Button>
+            </div>
+            {category_detail && category_detail.length > 0 ? (
+              <Table striped bordered hover size="sm">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Table number</th>
+                    <th>size</th>
+                    <th>Amount</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody>{this.GetTableData()}</tbody>
+              </Table>
+            ) : (
+              <h4>No data for Tables</h4>
+            )}
           </div>
-        </Modal>
-      </div>
+          {this.state.alert}
+          <Modal show={this.state.modal} style={{}}>
+            <div className="content">
+              <Grid fluid>
+                <Row>
+                  <Col md={12}>
+                    <Card
+                      title="Add Table"
+                      content={
+                        <form>
+                          <Row>
+                            <FormInputs
+                              ncols={["col-md-6", "col-md-6"]}
+                              properties={[
+                                {
+                                  label: "Table number",
+                                  type: "number",
+                                  bsClass: "form-control",
+                                  placeholder: "Table number",
+                                  defaultValue: this.state.tableNumber,
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      tableNumber: evt.target.value,
+                                    });
+                                  },
+                                },
+                                {
+                                  label: "Table Price",
+                                  type: "number",
+                                  defaultValue: this.state.minSize,
+                                  bsClass: "form-control",
+                                  placeholder: "Table amount",
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      amount: evt.target.value,
+                                    });
+                                  },
+                                },
+                              ]}
+                            />
+                            <FormInputs
+                              ncols={["col-md-6", "col-md-6"]}
+                              properties={[
+                                {
+                                  label: "Table Capacity",
+                                  type: "number",
+                                  bsClass: "form-control",
+                                  placeholder: "Table size",
+                                  defaultValue: this.state.size,
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      size: evt.target.value,
+                                    });
+                                  },
+                                },
+                                {
+                                  label: "Location",
+                                  control: true,
+                                  defaultValue: this.state.size,
+                                  child: [
+                                    { title: "Inside", value: "Inside" },
+                                    { title: "Deck", value: "Deck" },
+                                    { title: "Club Rush", value: "Club Rush" },
+                                    {
+                                      title: "Parking Lot",
+                                      value: "Parking Lot",
+                                    },
+                                  ],
+                                  placeholder: "Location",
+                                  variant: "outline-secondary",
+                                  title: "Location",
+                                  id: "input-group-dropdown-2",
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      location: evt.target.value,
+                                    });
+                                  },
+                                },
+                              ]}
+                            />
+                            <FormInputs
+                              ncols={["col-md-6", "col-md-6"]}
+                              properties={[
+                                {
+                                  label: "Description",
+                                  type: "textarea",
+                                  componentClass: "textarea",
+                                  bsClass: "form-control",
+                                  placeholder: "Description",
+                                  defaultValue: this.state.size,
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      description: evt.target.value,
+                                    });
+                                  },
+                                },
+                                {
+                                  label: "Amount to Duplicate",
+                                  control: true,
+                                  defaultValue: this.state.size,
+                                  child: [
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                  ].map((item, inde) => ({
+                                    title: inde + 1,
+                                    value: inde + 1,
+                                  })),
+                                  placeholder: "Location",
+                                  variant: "outline-secondary",
+                                  title: "Location",
+                                  id: "input-group-dropdown-2",
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      number: evt.target.value,
+                                    });
+                                  },
+                                },
+                              ]}
+                            />
+                            <FormInputs
+                              ncols={["col-md-4", "col-md-4", "col-md-4"]}
+                              properties={[
+                                {
+                                  label: "Date",
+                                  type: "date",
+                                  // componentClass: "date",
+                                  bsClass: "form-control",
+                                  placeholder: "Date",
+                                  defaultValue: this.state.size,
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      date: new Date(evt.target.value),
+                                    });
+                                  },
+                                },
+                                {
+                                  label: "Start Time",
+                                  type: "time",
+                                  // componentClass: "date",
+                                  bsClass: "form-control",
+                                  placeholder: "Start Time",
+                                  defaultValue: this.state.size,
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      startTime: moment(
+                                        evt.target.value,
+                                        "HH-mm"
+                                      ).toDate(),
+                                    });
+                                  },
+                                },
+                                {
+                                  label: "End Time",
+                                  type: "time",
+                                  // componentClass: "date",
+                                  bsClass: "form-control",
+                                  placeholder: "End Time",
+                                  defaultValue: this.state.size,
+                                  onChange: (evt) => {
+                                    this.setState({
+                                      endTime: moment(
+                                        evt.target.value,
+                                        "HH-mm"
+                                      ).toDate(),
+                                    });
+                                  },
+                                },
+                              ]}
+                            />
+                            <Col></Col>
+                            <Button
+                              style={{ marginLeft: "35%" }}
+                              bsStyle="warning"
+                              onClick={() =>
+                                this.setState({
+                                  size: null,
+                                  modal: false,
+                                  tableNumber: null,
+                                })
+                              }
+                            >
+                              Close
+                            </Button>
+                            <Button
+                              style={{ marginLeft: "5%" }}
+                              bsStyle="warning"
+                              onClick={this.createTable}
+                            >
+                              add table
+                            </Button>
+                          </Row>
+                        </form>
+                      }
+                    />
+                  </Col>
+                </Row>
+              </Grid>
+            </div>
+          </Modal>
+        </div>
+      </>
     );
   }
 }

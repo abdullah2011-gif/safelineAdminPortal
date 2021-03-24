@@ -14,6 +14,7 @@ import Notifications from "views/Notifications/Notifications";
 import AddCustomers from "views/Customers/AddCustomers";
 import ReservedTable from "views/Tables/ReservedTable";
 import ReservedParties from "views/Parties/ReservedParties";
+import ReservedHistory from "views/Parties/ReservedHistory";
 
 const dashboardRoutes = [
   {
@@ -84,6 +85,14 @@ const dashboardRoutes = [
     name: "Pre-Reservations",
     icon: "pe-7s-note2",
     component: ReservedParties,
+    layout: "/admin",
+    // redirect: true,
+  },
+  {
+    path: "/reserved-history",
+    name: "Reservation History",
+    icon: "pe-7s-note2",
+    component: ReservedHistory,
     layout: "/admin",
     // redirect: true,
   },
