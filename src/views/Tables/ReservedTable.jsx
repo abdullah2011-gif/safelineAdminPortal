@@ -107,6 +107,7 @@ class Closeit extends React.Component {
     return category_detail.map((item) => {
       var status = item.reservedStatus;
       var id = item._id;
+      console.log(item);
       return (
         <tr>
           <td>
@@ -121,9 +122,11 @@ class Closeit extends React.Component {
           <td>{status == "reserved" ? "free" : status}</td>
           <td>
             {" "}
-            {moment(item.startTime).format("hh-mm A") +
-              " - " +
-              moment(item.endTime).format("hh-mm A")}
+            {item.reservationReq
+              ? moment(item.reservationReq.startTime).format("hh-mm A") +
+                " - " +
+                moment(item.reservationReq.endTime).format("hh-mm A")
+              : null}
           </td>
           {/* {status == "booked" || status == "enteredBar" ? (
             <td className="text-right">
