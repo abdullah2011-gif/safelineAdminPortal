@@ -107,14 +107,11 @@ class Closeit extends React.Component {
     return category_detail.map((item) => {
       var status = item.reservedStatus;
       var id = item._id;
-      console.log(item);
+      var date = new Date(item.reservationReq && item.reservationReq.date);
+
       return (
         <tr>
-          <td>
-            {item.reservationReq
-              ? moment(item.reservationReq.date).format("DD/MM/YYYY")
-              : null}
-          </td>
+          <td>{moment(date).format("DD/MM/YYYY")}</td>
           <td>{item.tableNumber}</td>
           <td>{item.size}</td>
           <td>{item.amount}</td>
