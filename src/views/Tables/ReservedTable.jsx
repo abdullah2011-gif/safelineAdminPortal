@@ -108,7 +108,7 @@ class Closeit extends React.Component {
       var status = item.reservedStatus;
       var id = item._id;
       var date = new Date(item.reservationReq && item.reservationReq.date);
-
+      console.log(item.reservationReq);
       return (
         <tr>
           <td>{moment(date).format("DD/MM/YYYY")}</td>
