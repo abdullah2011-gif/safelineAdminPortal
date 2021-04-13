@@ -24,7 +24,7 @@ class Closeit extends React.Component {
       remainingCap: null,
       date: new Date(),
       day7: true,
-      showAll: false,
+      showAll: true,
     };
   }
   createTable = () => {
@@ -108,10 +108,11 @@ class Closeit extends React.Component {
       var status = item.reservedStatus;
       var id = item._id;
       var date = new Date(item.reservationReq && item.reservationReq.date);
-      console.log(item.reservationReq);
+      // Africa/Abidjan
+      let ank = date.toLocaleString("en-US", { timeZone: "Africa/Abidjan" });
       return (
         <tr>
-          <td>{moment(date).format("DD/MM/YYYY")}</td>
+          <td>{moment(ank).format("DD/MM/YYYY")}</td>
           <td>{item.tableNumber}</td>
           <td>{item.size}</td>
           <td>{item.amount}</td>
